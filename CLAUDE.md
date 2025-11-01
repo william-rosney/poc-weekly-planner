@@ -239,18 +239,24 @@ CREATE TABLE events (
 
 ## 🎨 Conventions de Code
 
-### TypeScript
+### TypeScript Best Practices
 
-- **Strict Mode:** `tsconfig.json` avec `strict: true`
+**IMPORTANT:** Ce projet suit des pratiques TypeScript strictes pour garantir la qualité et la maintenabilité du code.
+
+#### Règles Strictes
+
+- **Strict Mode:** `tsconfig.json` avec `strict: true` (NON NÉGOCIABLE)
+- **Never `any`:** JAMAIS utiliser le type `any` - utiliser `unknown` avec type guards
 - **Exports Named:** Privilégier les imports nommés (`import { foo }`)
-- **Interfaces > Types:** Pour les contrats publics
-- **Generics:** Utiliser pour les composants réutilisables
-- **Never `any`:** Toujours typer explicitement
+- **Interfaces > Types:** Pour les contrats publics et props de composants
+- **Generics:** Utiliser pour les composants et fonctions réutilisables
+- **Type Guards:** Toujours vérifier les types avec `instanceof`, `typeof`, ou type predicates
+- **Error Handling:** Utiliser `unknown` dans les blocs catch, jamais `any`
 
-**Exemple:**
+**Exemples de Bonnes Pratiques:**
 
 ```typescript
-// ✅ BON
+// ✅ BON - Types explicites et type guards
 interface User {
   id: string;
   name: string;
@@ -258,12 +264,27 @@ interface User {
 }
 
 const getUser = async (id: string): Promise<User | null> => {
-  // ...
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    return await response.json();
+  } catch (error: unknown) {
+    // ✅ Type guard pour extraire le message d'erreur
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error fetching user:", message);
+    return null;
+  }
 };
 
-// ❌ MAUVAIS
+// ❌ MAUVAIS - Utilisation de any
 const getUser = async (id: any) => {
-  // ...
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    return await response.json();
+  } catch (error: any) {
+    // ❌ Ne jamais faire ça!
+    console.error("Error:", error.message);
+    return null;
+  }
 };
 ```
 
@@ -379,13 +400,24 @@ export const syncEvents = (userId: string) => {
 
 ### Avant chaque commit:
 
-- [ ] TypeScript compile sans erreur (`npm run typecheck`)
-- [ ] ESLint passe (`npm run lint`)
-- [ ] Prettier formaté (`npm run format`)
+**🚨 OBLIGATOIRE: Exécuter `/quick-lint` avant tout commit!**
+
+Cette commande exécute automatiquement:
+
+- TypeScript compilation (`npm run typecheck`)
+- ESLint avec auto-fix (`npm run lint`)
+- Prettier formatting (`npm run format`)
+
+**Checklist complète:**
+
+- [ ] **Exécuter `/quick-lint`** (ou `npm run typecheck && npm run lint && npm run format`)
+- [ ] TypeScript compile sans erreur - **AUCUN type `any` autorisé**
+- [ ] ESLint passe sans erreurs ni warnings
+- [ ] Prettier formaté automatiquement
 - [ ] Tests passent (quand implémentés)
-- [ ] Pas de `console.log` en production
-- [ ] Pas de secrets en dur
-- [ ] Accessibilité vérifiée (Alt text, ARIA labels)
+- [ ] Pas de `console.log` en production (seulement `console.error` et `console.warn`)
+- [ ] Pas de secrets en dur dans le code
+- [ ] Accessibilité vérifiée (Alt text, ARIA labels, contraste)
 - [ ] Performance acceptable (aucun re-render inutile)
 
 ### À la revue de code:
@@ -518,28 +550,38 @@ npm run test:watch       # Mode watch
 
 ## ⚠️ Pièges Courants à Éviter
 
-1. **Auth Token Expiration:** Toujours gérer les erreurs 401 + refresh token automatique
-2. **Realtime Débouncing:** Ne pas recréer les subscriptions à chaque render (useEffect avec deps)
-3. **Tailwind v4 Configuration:** Ne JAMAIS créer de `tailwind.config.ts` - utiliser `@theme` dans globals.css uniquement
-4. **Format OKLCH:** Toujours utiliser OKLCH pour les nouvelles couleurs (pas HSL ou RGB)
-5. **TypeScript `any`:** Refuser la tentation, utiliser `unknown` + type guards
-6. **Re-renders Inutiles:** Memoïzer les callbacks avec `useCallback` si nécessaire
-7. **Secrets Hardcodés:** Toujours utiliser `.env.local`
-8. **UX Bloquant:** Afficher loading + permettre annulation sur opérations longues
+1. **TypeScript `any`:** ❌ INTERDIT - utiliser `unknown` + type guards (voir exemples ci-dessus)
+2. **Oublier `/quick-lint`:** ❌ Toujours exécuter avant un commit pour éviter les erreurs
+3. **Auth Token Expiration:** Toujours gérer les erreurs 401 + refresh token automatique
+4. **Realtime Débouncing:** Ne pas recréer les subscriptions à chaque render (useEffect avec deps)
+5. **Tailwind v4 Configuration:** Ne JAMAIS créer de `tailwind.config.ts` - utiliser `@theme` dans globals.css uniquement
+6. **Format OKLCH:** Toujours utiliser OKLCH pour les nouvelles couleurs (pas HSL ou RGB)
+7. **Re-renders Inutiles:** Memoïzer les callbacks avec `useCallback` si nécessaire
+8. **Secrets Hardcodés:** Toujours utiliser `.env.local`, jamais dans le code source
+9. **UX Bloquant:** Afficher loading + permettre annulation sur opérations longues
+10. **Console.log en Production:** Nettoyer tous les logs de debug avant commit
 
 ---
 
 ## 🔍 Debugging & Workflow
 
-### Slash Commands Personnalisés (à ajouter dans `.claude/commands/`)
+### Slash Commands Personnalisés
+
+#### `/quick-lint` – 🚨 COMMANDE OBLIGATOIRE PRÉ-COMMIT
+
+**À exécuter AVANT chaque commit!**
+
+Lance dans l'ordre:
+
+1. TypeScript compilation (`npm run typecheck`)
+2. ESLint avec auto-fix (`npm run lint`)
+3. Prettier formatting (`npm run format`)
+
+Corrige automatiquement les problèmes de formatage détectés.
 
 #### `/qtest` – Tests rapides
 
 Exécute les tests pertinents et valide.
-
-#### `/qlint` – Lint & Format
-
-Lance ESLint + Prettier sur les fichiers modifiés.
 
 #### `/qreview` – Revue rapide
 
@@ -605,6 +647,15 @@ supabase.channel().on('*', console.log)
 ---
 
 ## 🔄 Git & Commits
+
+### Workflow de Commit
+
+**Avant de créer un commit, TOUJOURS:**
+
+1. Exécuter `/quick-lint` pour valider le code
+2. Vérifier que tous les tests passent
+3. S'assurer qu'aucun fichier sensible n'est inclus (`.env.local`, secrets, etc.)
+4. Créer un commit avec un message conventionnel
 
 ### Convention Commits
 
