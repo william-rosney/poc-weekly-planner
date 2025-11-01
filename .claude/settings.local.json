@@ -1,10 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(git log:*)",
-      "Bash(npm install:*)",
-      "Bash(find:*)"
-    ],
+    "allow": ["Bash(git log:*)", "Bash(npm install:*)", "Bash(find:*)"],
     "deny": [],
     "ask": []
   }

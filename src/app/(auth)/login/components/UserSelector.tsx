@@ -34,7 +34,7 @@ export function UserSelector({
         if (error) throw error;
 
         setUsers(data || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erreur lors du chargement des utilisateurs:", err);
         setError("Impossible de charger les membres de la famille");
       } finally {
@@ -70,9 +70,7 @@ export function UserSelector({
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
-        <p className="mt-4 text-sm text-gray-600">
-          Chargement des membres...
-        </p>
+        <p className="mt-4 text-sm text-gray-600">Chargement des membres...</p>
       </motion.div>
     );
   }
@@ -128,7 +126,7 @@ export function UserSelector({
               transition={{
                 duration: 0.15,
                 delay: index * 0.03, // Délai très court pour apparition quasi instantanée
-                ease: "easeOut"
+                ease: "easeOut",
               }}
             >
               <Card
@@ -169,7 +167,7 @@ export function UserSelector({
                         duration: 0.2,
                         type: "spring",
                         stiffness: 300,
-                        damping: 25
+                        damping: 25,
                       }}
                       className="text-2xl"
                     >

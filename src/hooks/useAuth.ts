@@ -149,9 +149,11 @@ export function useAuth() {
 
       if (error) throw error;
       return { success: true, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erreur lors de l'envoi du Magic Link:", error);
-      return { success: false, error: error.message };
+      const message =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      return { success: false, error: message };
     }
   };
 
@@ -169,9 +171,11 @@ export function useAuth() {
         error: null,
       });
       return { success: true, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erreur lors de la déconnexion:", error);
-      return { success: false, error: error.message };
+      const message =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      return { success: false, error: message };
     }
   };
 

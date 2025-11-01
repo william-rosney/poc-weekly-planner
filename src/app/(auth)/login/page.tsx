@@ -16,7 +16,11 @@ import { ArrowLeft } from "lucide-react";
  */
 export default function LoginPage() {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading, signInWithMagicLink } = useAuth();
+  const {
+    isAuthenticated,
+    loading: authLoading,
+    signInWithMagicLink,
+  } = useAuth();
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [selectedUserName, setSelectedUserName] = useState<string>("");
 
@@ -81,7 +85,7 @@ export default function LoginPage() {
               duration: 2.5,
               repeat: Infinity,
               repeatDelay: 4,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
           >
             🎄

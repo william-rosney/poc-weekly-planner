@@ -35,6 +35,7 @@ export function SnowfallBackground() {
 
   // Marquer le composant comme monté après le premier rendu côté client
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

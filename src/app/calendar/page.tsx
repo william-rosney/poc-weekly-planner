@@ -39,7 +39,9 @@ export default function CalendarPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-christmas-red border-r-transparent"></div>
-          <p className="mt-4 text-sm text-gray-700 font-medium">Chargement...</p>
+          <p className="mt-4 text-sm text-gray-700 font-medium">
+            Chargement...
+          </p>
         </motion.div>
       </div>
     );
@@ -73,7 +75,7 @@ export default function CalendarPage() {
                 duration: 2.5,
                 repeat: Infinity,
                 repeatDelay: 4,
-                ease: "easeInOut"
+                ease: "easeInOut",
               }}
             >
               🎄
@@ -86,7 +88,8 @@ export default function CalendarPage() {
           {/* Section utilisateur et déconnexion - hover optimisé */}
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-700 font-medium">
-              🎅 Bonjour, <strong className="text-christmas-red">{user.name}</strong>
+              🎅 Bonjour,{" "}
+              <strong className="text-christmas-red">{user.name}</strong>
             </span>
             <Button
               variant="outline"
@@ -129,7 +132,7 @@ export default function CalendarPage() {
                   transition={{
                     duration: 3,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: "easeInOut",
                   }}
                 >
                   📅
@@ -140,25 +143,12 @@ export default function CalendarPage() {
                 </h2>
 
                 <p className="text-gray-700 mb-6 font-medium">
-                  L'intégration de FullCalendar sera réalisée à l'étape 2
+                  L&apos;intégration de FullCalendar sera réalisée à
+                  l&apos;étape 2
                 </p>
 
                 {/* Éléments décoratifs animés - animations synchronisées */}
                 <div className="flex justify-center gap-8 text-5xl mt-8">
-                    <motion.span
-                    animate={{
-                      y: [0, -12, 0],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 0
-                    }}
-                    className="scale-50"
-                    >
-                    <SantaClause />
-                    </motion.span>
                   <motion.span
                     animate={{
                       y: [0, -12, 0],
@@ -167,7 +157,21 @@ export default function CalendarPage() {
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut",
-                      delay: 0.3
+                      delay: 0,
+                    }}
+                    className="scale-50"
+                  >
+                    <SantaClause />
+                  </motion.span>
+                  <motion.span
+                    animate={{
+                      y: [0, -12, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.3,
                     }}
                   >
                     🎄
@@ -180,7 +184,7 @@ export default function CalendarPage() {
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut",
-                      delay: 0.6
+                      delay: 0.6,
                     }}
                   >
                     🎁
@@ -193,7 +197,7 @@ export default function CalendarPage() {
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut",
-                      delay: 0.9
+                      delay: 0.9,
                     }}
                   >
                     ⛄

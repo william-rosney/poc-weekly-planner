@@ -19,26 +19,31 @@ Application web moderne permettant aux familles de gérer leur organisation quot
 ## 🛠️ Installation
 
 1. Cloner le repository
+
 ```bash
 git clone https://github.com/william-rosney/poc-weekly-planner.git
 cd poc-weekly-planner
 ```
 
 2. Installer les dépendances
+
 ```bash
 npm install
 ```
 
 3. Configurer les variables d'environnement
+
 ```bash
 cp .env.example .env.local
 ```
 
 Puis éditer `.env.local` avec vos identifiants Supabase:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 4. Lancer le serveur de développement
+
 ```bash
 npm run dev
 ```
@@ -85,6 +90,7 @@ poc-weekly-planner/
 ## 🔐 Authentification
 
 L'application utilise Supabase Auth avec Magic Link:
+
 1. Les utilisateurs sont pré-enregistrés dans la base de données
 2. Sélection du profil depuis une liste
 3. Réception d'un Magic Link par email
@@ -93,6 +99,7 @@ L'application utilise Supabase Auth avec Magic Link:
 ## 📊 État du Projet
 
 ### ✅ Étape 0 - Initialisation (Complétée)
+
 - [x] Projet Next.js 15 avec TypeScript
 - [x] Configuration Tailwind CSS
 - [x] Configuration ESLint + Prettier
@@ -101,6 +108,7 @@ L'application utilise Supabase Auth avec Magic Link:
 - [x] README du projet
 
 ### 🔄 Prochaines Étapes
+
 1. **Étape 1:** Authentification et gestion des utilisateurs
 2. **Étape 2:** Tableau de bord avec vue calendrier
 3. **Étape 3:** CRUD des événements

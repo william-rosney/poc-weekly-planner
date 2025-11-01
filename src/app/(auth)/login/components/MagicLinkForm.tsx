@@ -9,7 +9,9 @@ import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 interface MagicLinkFormProps {
   email: string;
   userName: string;
-  onSendMagicLink: (email: string) => Promise<{ success: boolean; error: string | null }>;
+  onSendMagicLink: (
+    email: string
+  ) => Promise<{ success: boolean; error: string | null }>;
 }
 
 /**
@@ -57,7 +59,7 @@ export function MagicLinkForm({
                   duration: 0.4,
                   type: "spring",
                   stiffness: 260,
-                  damping: 20
+                  damping: 20,
                 }}
               >
                 <CheckCircle2 className="h-16 w-16 text-christmas-green drop-shadow-lg" />
@@ -73,8 +75,8 @@ export function MagicLinkForm({
                   <strong className="text-christmas-red">{email}</strong>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  ✨ Vérifiez votre boîte de réception et cliquez sur le lien pour
-                  vous connecter.
+                  ✨ Vérifiez votre boîte de réception et cliquez sur le lien
+                  pour vous connecter.
                 </p>
               </div>
 
@@ -130,7 +132,9 @@ export function MagicLinkForm({
             <div className="bg-linear-to-r from-christmas-cream to-christmas-gold/10 p-4 rounded-lg border-2 border-christmas-gold/40 shadow-sm">
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-christmas-gold shrink-0" />
-                <p className="text-sm font-semibold text-gray-800 break-all">{email}</p>
+                <p className="text-sm font-semibold text-gray-800 break-all">
+                  {email}
+                </p>
               </div>
             </div>
 
@@ -145,14 +149,20 @@ export function MagicLinkForm({
                   <motion.span
                     className="inline-block h-4 w-4 rounded-full border-2 border-solid border-white border-r-transparent mr-2"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   />
                   <span className="font-semibold">Envoi en cours...</span>
                 </span>
               ) : (
                 <span className="flex items-center justify-center">
                   <Mail className="mr-2 h-5 w-5" />
-                  <span className="font-semibold">✨ Envoyer le lien magique</span>
+                  <span className="font-semibold">
+                    ✨ Envoyer le lien magique
+                  </span>
                 </span>
               )}
             </Button>
