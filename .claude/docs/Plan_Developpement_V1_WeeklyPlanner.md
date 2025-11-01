@@ -6,51 +6,54 @@ L’objectif est d’avancer par **petites itérations**, chacune livrant une pa
 
 ---
 
-## 🧩 Étape 0 – Initialisation du projet
+## 🧩 Étape 0 – Initialisation du projet ✅ **TERMINÉE**
 ### 🎯 Objectif
 Poser les bases techniques du projet.
 
 ### 🧱 Tâches
-- [ ] Initialiser le projet **Next.js 15** avec **TypeScript**
-- [ ] Ajouter et configurer **Tailwind CSS**
-- [ ] Ajouter et configurer **shadcn/ui**
-- [ ] Configurer **Framer Motion**
-- [ ] Créer la structure de base du dossier `/app`
-- [ ] Créer la configuration du client **Supabase** (`lib/supabaseClient.ts`)
-- [ ] Configurer ESLint + Prettier + conventions de code
-- [ ] Ajouter un README de projet
+- [x] Initialiser le projet **Next.js 15** avec **TypeScript**
+- [x] Ajouter et configurer **Tailwind CSS**
+- [x] Ajouter et configurer **shadcn/ui**
+- [x] Configurer **Framer Motion**
+- [x] Créer la structure de base du dossier `/app`
+- [x] Créer la configuration du client **Supabase** (`lib/supabaseClient.ts`)
+- [x] Configurer ESLint + Prettier + conventions de code
+- [x] Ajouter un README de projet
 
 ### ✅ Livrable
 Une application Next.js vierge avec la stack installée et fonctionnelle.
 
 ---
 
-## 🧩 Étape 1 – Authentification et gestion des utilisateurs
+## 🧩 Étape 1 – Authentification et gestion des utilisateurs ✅ **TERMINÉE**
 ### 🎯 Objectif
 Permettre aux membres de la famille de se connecter via un **Magic Link**.
 
 ### 🧱 Tâches
-- [ ] Crqes de la famille (nom + email)
-- [ ] Mettre en place Supabase Auth avec Magic Link
-- [ ] Créer la page `/login` avec la liste des membres (sélecteur d’utilisateur)
-- [ ] Ajouter l’envoi du Magic Link après sélection d’un membre
-- [ ] Gérer la redirection automatique après authentification
-- [ ] Mettre en place le stockage de session utilisateur (auth persistente)
+- [x] Créer la table `users` dans Supabase
+- [x] Pré-enregistrer les membres de la famille (nom + email)
+- [x] Mettre en place Supabase Auth avec Magic Link
+- [x] Créer la page `/login` avec la liste des membres (sélecteur d'utilisateur)
+- [x] Ajouter l'envoi du Magic Link après sélection d'un membre
+- [x] Gérer la redirection automatique après authentification
+- [x] Mettre en place le stockage de session utilisateur (auth persistente)
 
 ### ✅ Livrable
 Une page de connexion fonctionnelle avec authentification Supabase.
 
+**Commit:** `887782f` - feat: implement magic link authentication system
+
 ---
 
-## 🧩 Étape 2 – Tableau de bord de la semaine
+## 🧩 Étape 2 – Tableau de bord de la semaine 🚧 **EN COURS**
 ### 🎯 Objectif
 Afficher une **vue calendrier** de la semaine et permettre la navigation entre semaines.
 
 ### 🧱 Tâches
-- [ ] Créer la table `events` dans Supabase
+- [x] Créer la table `events` dans Supabase (migration préparée)
 - [ ] Intégrer **FullCalendar** dans la page `/calendar`
 - [ ] Configurer la vue hebdomadaire sur mobile et desktop
-  - Mobile : affichage d’un seul jour à la fois
+  - Mobile : affichage d'un seul jour à la fois
   - Web : affichage de la semaine complète
 - [ ] Ajouter la navigation entre semaines
 - [ ] Charger les événements depuis Supabase (SSR ou Realtime)
@@ -161,17 +164,17 @@ Une version hébergée, accessible à tous les membres de la famille.
 ---
 
 ## 🧭 Résumé visuel des étapes
-| Étape | Nom | Objectif principal |
-|-------|-----|---------------------|
-| 0 | Initialisation | Setup du projet Next.js + Tailwind + Supabase |
-| 1 | Auth | Magic Link + Sélecteur d’utilisateur |
-| 2 | Calendrier | Vue hebdo avec FullCalendar |
-| 3 | CRUD | Gestion complète des événements |
-| 4 | Votes | Système de participation |
-| 5 | UX | Animations + UI responsive |
-| 6 | Realtime | Synchronisation en direct |
-| 7 | Finalisation | Tests + nettoyage |
-| 8 | Hébergement | Déploiement sur Vercel |
+| Étape | Nom | Statut | Objectif principal |
+|-------|-----|--------|---------------------|
+| 0 | Initialisation | ✅ Terminée | Setup du projet Next.js + Tailwind + Supabase |
+| 1 | Auth | ✅ Terminée | Magic Link + Sélecteur d'utilisateur |
+| 2 | Calendrier | 🚧 En cours | Vue hebdo avec FullCalendar |
+| 3 | CRUD | ⏳ À faire | Gestion complète des événements |
+| 4 | Votes | ⏳ À faire | Système de participation |
+| 5 | UX | ⏳ À faire | Animations + UI responsive |
+| 6 | Realtime | ⏳ À faire | Synchronisation en direct |
+| 7 | Finalisation | ⏳ À faire | Tests + nettoyage |
+| 8 | Hébergement | ⏳ À faire | Déploiement sur Vercel |
 
 ---
 

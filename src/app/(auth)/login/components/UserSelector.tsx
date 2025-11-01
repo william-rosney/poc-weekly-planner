@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase/client";
 import { User } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,68 +59,128 @@ export function UserSelector({
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-        <p className="mt-4 text-sm text-muted-foreground">
+      <motion.div
+        className="text-center py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="inline-block h-8 w-8 rounded-full border-4 border-solid border-christmas-red border-r-transparent"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <p className="mt-4 text-sm text-gray-600">
           Chargement des membres...
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <p className="text-sm text-destructive">{error}</p>
-      </div>
+      <motion.div
+        className="text-center py-8"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+      >
+        <p className="text-sm text-christmas-red">{error}</p>
+      </motion.div>
     );
   }
 
   if (users.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-sm text-muted-foreground">
+      <motion.div
+        className="text-center py-8"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <p className="text-sm text-gray-600">
           Aucun membre trouvé. Veuillez configurer les utilisateurs dans
           Supabase.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-center mb-4">
-        Qui êtes-vous ?
-      </h2>
+      {/* Titre avec animation optimisée - durée réduite pour fluidité */}
+      <motion.h2
+        className="text-lg font-semibold text-center mb-4 text-christmas-red"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
+        🎁 Qui êtes-vous ?
+      </motion.h2>
+
+      {/* Liste des utilisateurs avec animations échelonnées optimisées */}
       <div className="grid gap-3">
-        {users.map((user) => (
-          <Card
-            key={user.id}
-            className={`cursor-pointer transition-all hover:shadow-md ${
-              selectedEmail === user.email
-                ? "ring-2 ring-primary bg-primary/5"
-                : ""
-            }`}
-            onClick={() => onSelectUser(user.email, user.name)}
-          >
-            <CardContent className="flex items-center gap-4 p-4">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                  {getInitials(user.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="font-medium">{user.name}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-              </div>
-              {user.role === "admin" && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                  Admin
-                </span>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        <AnimatePresence>
+          {users.map((user, index) => (
+            <motion.div
+              key={user.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.15,
+                delay: index * 0.03, // Délai très court pour apparition quasi instantanée
+                ease: "easeOut"
+              }}
+            >
+              <Card
+                className={`cursor-pointer transition-shadow duration-150 ease-out hover:shadow-xl ${
+                  selectedEmail === user.email
+                    ? "ring-2 ring-christmas-green bg-christmas-green/5 border-christmas-green shadow-lg"
+                    : "border-christmas-gold/30 hover:border-christmas-gold"
+                }`}
+                onClick={() => onSelectUser(user.email, user.name)}
+              >
+                <CardContent className="flex items-center gap-4 p-4">
+                  {/* Avatar avec bordure festive */}
+                  <Avatar className="h-14 w-14 border-2 border-christmas-gold shadow-md">
+                    <AvatarFallback className="bg-gradient-to-br from-christmas-red/20 to-christmas-green/20 text-christmas-red font-bold text-lg">
+                      {getInitials(user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {/* Info utilisateur */}
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-600">{user.email}</p>
+                  </div>
+
+                  {/* Icône Admin simple - juste l'emoji, pas de badge */}
+                  {user.role === "admin" && (
+                    <span className="text-2xl" title="Administrateur">
+                      👑
+                    </span>
+                  )}
+
+                  {/* Indicateur de sélection - animation rapide */}
+                  {selectedEmail === user.email && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        duration: 0.2,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25
+                      }}
+                      className="text-2xl"
+                    >
+                      ✨
+                    </motion.div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
