@@ -88,6 +88,7 @@ SELECT * FROM pg_policies WHERE tablename = 'users';
 ## Structure des tables
 
 ### Table `users`
+
 - `id` : UUID (lié à auth.users)
 - `email` : Email unique
 - `name` : Nom complet
@@ -96,6 +97,7 @@ SELECT * FROM pg_policies WHERE tablename = 'users';
 - `created_at`, `updated_at` : Timestamps automatiques
 
 ### Table `events`
+
 - `id` : UUID
 - `title` : Titre de l'événement
 - `description` : Description (optionnel)
@@ -110,10 +112,12 @@ SELECT * FROM pg_policies WHERE tablename = 'users';
 ## Row Level Security (RLS)
 
 ### Policies sur `users`
+
 - **SELECT** : Tous les utilisateurs authentifiés peuvent voir tous les profils
 - **UPDATE** : Les utilisateurs peuvent modifier leur propre profil
 
 ### Policies sur `events`
+
 - **SELECT** : Tous les membres peuvent voir tous les événements (contexte familial)
 - **INSERT** : Les utilisateurs authentifiés peuvent créer des événements
 - **UPDATE** : Les utilisateurs peuvent modifier leurs propres événements
@@ -122,6 +126,7 @@ SELECT * FROM pg_policies WHERE tablename = 'users';
 ## Prochaines étapes
 
 Une fois les migrations appliquées :
+
 1. Vérifiez que les utilisateurs sont bien créés
 2. Testez la connexion avec Magic Link depuis l'application
 3. Passez à l'étape 2 : Intégration du calendrier

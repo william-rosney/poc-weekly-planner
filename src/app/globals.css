@@ -1,65 +1,81 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
+/**
+ * Configuration Tailwind CSS v4 - Thème complet
+ * Utilise le système @theme natif de v4 pour toutes les variables
+ */
+@theme {
+  /* ===================================
+   * Couleurs du Thème Christmas
+   * =================================== */
+  --color-christmas-red: oklch(0.45 0.16 25);
+  --color-christmas-red-light: oklch(0.55 0.19 25);
+  --color-christmas-red-dark: oklch(0.40 0.15 25);
+  --color-christmas-green: oklch(0.57 0.15 142);
+  --color-christmas-green-light: oklch(0.70 0.20 142);
+  --color-christmas-green-dark: oklch(0.52 0.13 142);
+  --color-christmas-gold: oklch(0.80 0.18 102);
+  --color-christmas-gold-light: oklch(0.67 0.19 62);
+  --color-christmas-gold-dark: oklch(0.65 0.16 85);
+  --color-christmas-cream: oklch(0.97 0.02 85);
+  --color-christmas-cream-light: oklch(0.99 0.01 85);
+  --color-christmas-cream-dark: oklch(0.90 0.04 85);
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+  /* ===================================
+   * Couleurs shadcn/ui (converties en OKLCH)
+   * Utilisées par les composants UI
+   * =================================== */
+
+  /* Background & Foreground */
+  --color-background: oklch(1 0 0);              /* #ffffff */
+  --color-foreground: oklch(0.15 0.02 240);      /* #09090b */
+
+  /* Card */
+  --color-card: oklch(1 0 0);                    /* #ffffff */
+  --color-card-foreground: oklch(0.15 0.02 240); /* #09090b */
+
+  /* Popover */
+  --color-popover: oklch(1 0 0);                 /* #ffffff */
+  --color-popover-foreground: oklch(0.15 0.02 240);
+
+  /* Primary (bleu) */
+  --color-primary: oklch(0.57 0.22 250);         /* #2563eb */
+  --color-primary-foreground: oklch(0.98 0.01 250);
+
+  /* Secondary (gris clair) */
+  --color-secondary: oklch(0.96 0.01 250);       /* #f4f4f5 */
+  --color-secondary-foreground: oklch(0.20 0.02 240);
+
+  /* Muted (gris) */
+  --color-muted: oklch(0.96 0.01 250);           /* #f4f4f5 */
+  --color-muted-foreground: oklch(0.55 0.02 240);
+
+  /* Accent (gris clair) */
+  --color-accent: oklch(0.96 0.01 250);          /* #f4f4f5 */
+  --color-accent-foreground: oklch(0.20 0.02 240);
+
+  /* Destructive (rouge) */
+  --color-destructive: oklch(0.62 0.26 25);      /* #ef4444 */
+  --color-destructive-foreground: oklch(0.98 0.01 250);
+
+  /* Border, Input, Ring */
+  --color-border: oklch(0.91 0.01 250);          /* #e4e4e7 */
+  --color-input: oklch(0.91 0.01 250);           /* #e4e4e7 */
+  --color-ring: oklch(0.57 0.22 250);            /* #2563eb */
+
+  /* ===================================
+   * Custom Properties
+   * =================================== */
+  --radius: 0.5rem;
 }
 
+/**
+ * Styles de base
+ * Application des couleurs au body
+ */
 @layer base {
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }

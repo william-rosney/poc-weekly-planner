@@ -16,7 +16,9 @@ export default function CallbackPage() {
     const handleAuthCallback = async () => {
       try {
         // Récupérer le hash de l'URL
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1)
+        );
         const accessToken = hashParams.get("access_token");
         const refreshToken = hashParams.get("refresh_token");
 
@@ -51,9 +53,11 @@ export default function CallbackPage() {
             setTimeout(() => router.push("/login"), 3000);
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erreur lors de l'authentification:", err);
-        setError(err.message || "Une erreur s'est produite");
+        const message =
+          err instanceof Error ? err.message : "Une erreur s'est produite";
+        setError(message);
         setTimeout(() => router.push("/login"), 3000);
       }
     };
@@ -82,7 +86,7 @@ export default function CallbackPage() {
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Erreur d'authentification
+              Erreur d&apos;authentification
             </h2>
             <p className="text-sm text-gray-600 mb-4">{error}</p>
             <p className="text-xs text-gray-500">

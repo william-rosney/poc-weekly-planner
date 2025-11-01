@@ -5,6 +5,7 @@ Passe en revue les changements selon la checklist qualité du projet.
 ## Checklist
 
 ### Avant chaque commit
+
 - [ ] TypeScript compile sans erreur (`npm run typecheck`)
 - [ ] ESLint passe (`npm run lint`)
 - [ ] Prettier formaté (`npm run format:check`)
@@ -13,6 +14,7 @@ Passe en revue les changements selon la checklist qualité du projet.
 - [ ] Accessibilité vérifiée (Alt text, ARIA labels)
 
 ### À la revue de code
+
 - [ ] Le code suit les conventions du projet (voir CLAUDE.md)
 - [ ] La logique est compréhensible
 - [ ] Pas de dépendances inutiles ajoutées
