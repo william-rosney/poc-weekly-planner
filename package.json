@@ -1,0 +1,55 @@
+{
+  "name": "poc-weekly-planner",
+  "version": "1.0.0",
+  "description": "Application familiale de gestion du quotidien - POC",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/william-rosney/poc-weekly-planner.git"
+  },
+  "keywords": [
+    "next.js",
+    "react",
+    "supabase",
+    "calendar",
+    "family"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/william-rosney/poc-weekly-planner/issues"
+  },
+  "homepage": "https://github.com/william-rosney/poc-weekly-planner#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.78.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.24",
+    "next": "^16.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^16.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3"
+  }
+}
