@@ -30,8 +30,7 @@ Une application Next.js vierge avec la stack installée et fonctionnelle.
 Permettre aux membres de la famille de se connecter via un **Magic Link**.
 
 ### 🧱 Tâches
-- [ ] Créer la table `users` dans Supabase
-- [ ] Pré-enregistrer les membres de la famille (nom + email)
+- [ ] Crqes de la famille (nom + email)
 - [ ] Mettre en place Supabase Auth avec Magic Link
 - [ ] Créer la page `/login` avec la liste des membres (sélecteur d’utilisateur)
 - [ ] Ajouter l’envoi du Magic Link après sélection d’un membre
