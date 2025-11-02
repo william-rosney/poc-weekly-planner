@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { User } from "@/lib/types";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -25,6 +25,9 @@ export function useAuth() {
   });
 
   useEffect(() => {
+    // Créer le client Supabase
+    const supabase = createClient();
+
     // Récupérer la session initiale
     const getInitialSession = async () => {
       try {
@@ -34,6 +37,7 @@ export function useAuth() {
         } = await supabase.auth.getSession();
 
         if (error) {
+          console.error("[useAuth] Session error:", error);
           setState((prev) => ({
             ...prev,
             loading: false,
@@ -51,10 +55,7 @@ export function useAuth() {
             .single();
 
           if (userError) {
-            console.error(
-              "Erreur lors de la récupération des données utilisateur:",
-              userError
-            );
+            console.error("[useAuth] Error fetching user data:", userError);
             setState((prev) => ({
               ...prev,
               supabaseUser: session.user,
@@ -139,6 +140,7 @@ export function useAuth() {
    * Envoie un Magic Link à l'email spécifié
    */
   const signInWithMagicLink = async (email: string) => {
+    const supabase = createClient();
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
@@ -161,6 +163,7 @@ export function useAuth() {
    * Déconnecte l'utilisateur
    */
   const signOut = async () => {
+    const supabase = createClient();
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;

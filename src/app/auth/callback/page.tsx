@@ -1,0 +1,165 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { motion } from "framer-motion";
+
+/**
+ * Page de callback pour l'authentification Magic Link
+ *
+ * Cette page:
+ * 1. Récupère le code PKCE depuis l'URL
+ * 2. Échange le code pour une session utilisateur
+ * 3. Redirige vers le calendrier ou affiche une erreur
+ *
+ * Note: Utilise une page client plutôt qu'un Route Handler pour éviter
+ * les problèmes de chargement de chunks avec Next.js 16 Turbopack
+ */
+export default function AuthCallbackPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleCallback = async () => {
+      const code = searchParams.get("code");
+      const tokenHash = searchParams.get("token_hash");
+      const type = searchParams.get("type");
+      const next = searchParams.get("next") ?? "/calendar";
+
+      try {
+        const supabase = createClient();
+
+        // Handle PKCE flow (modern - with code parameter)
+        if (code) {
+          const { data, error: exchangeError } =
+            await supabase.auth.exchangeCodeForSession(code);
+
+          if (exchangeError) {
+            console.error("[Callback] Exchange error:", exchangeError);
+            console.error("[Callback] Error details:", {
+              message: exchangeError.message,
+              status: exchangeError.status,
+              name: exchangeError.name,
+            });
+            setError(`Erreur: ${exchangeError.message}`);
+            setTimeout(() => router.push("/login"), 3000);
+            return;
+          }
+
+          if (data.session) {
+            router.push(next);
+            return;
+          }
+        }
+
+        // Handle Implicit flow (legacy - with token_hash and type)
+        if (tokenHash && type) {
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: type as "email" | "magiclink",
+          });
+
+          if (verifyError) {
+            console.error("[Callback] Verify error:", verifyError);
+            console.error("[Callback] Error details:", {
+              message: verifyError.message,
+              status: verifyError.status,
+              name: verifyError.name,
+            });
+            setError(`Erreur: ${verifyError.message}`);
+            setTimeout(() => router.push("/login"), 3000);
+            return;
+          }
+
+          if (data.session) {
+            router.push(next);
+            return;
+          }
+        }
+
+        // No valid authentication parameters found
+        console.error("[Callback] No valid auth parameters in URL");
+        setError("Paramètres d'authentification invalides");
+        setTimeout(() => router.push("/login"), 3000);
+      } catch (err: unknown) {
+        console.error("[Callback] Unexpected error:", err);
+        const message = err instanceof Error ? err.message : "Erreur inconnue";
+        setError(message);
+        setTimeout(() => router.push("/login"), 3000);
+      }
+    };
+
+    handleCallback();
+  }, [searchParams, router]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+        <motion.div
+          className="text-center p-8 bg-white rounded-lg shadow-xl max-w-md"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="text-6xl mb-4">❌</div>
+          <h1 className="text-2xl font-bold text-christmas-red mb-2">
+            Erreur d&apos;authentification
+          </h1>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-sm text-gray-500">
+            Redirection vers la page de connexion...
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+      <motion.div
+        className="text-center p-8 bg-white rounded-lg shadow-xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        {/* Spinner de chargement avec animation */}
+        <motion.div
+          className="inline-block h-16 w-16 rounded-full border-4 border-solid border-christmas-red border-r-transparent mb-6"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+
+        <h1 className="text-2xl font-bold text-christmas-green mb-2">
+          Connexion en cours...
+        </h1>
+        <p className="text-gray-600">Vérification de votre identité</p>
+
+        {/* Animation de points */}
+        <motion.div
+          className="flex justify-center gap-1 mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="w-2 h-2 bg-christmas-gold rounded-full"
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.5, 1, 0.5],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.2,
+              }}
+            />
+          ))}
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
