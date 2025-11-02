@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { withTimeout } from "@/lib/timeout";
+import { TIMEOUTS } from "@/lib/constants";
 
 /**
  * Updates the user session in middleware
@@ -10,6 +12,9 @@ import { NextResponse, type NextRequest } from "next/server";
  *
  * IMPORTANT: Always use supabase.auth.getUser() instead of getSession()
  * to ensure the token is properly revalidated server-side.
+ *
+ * Includes timeout and error handling to prevent infinite loading states
+ * when sessions become invalid (e.g., after server restart).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -42,11 +47,30 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Do not remove this line!
-  // Triggers automatic token refresh and validation
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    // Generous timeout to support slower networks while detecting corrupted sessions
+    const result = await withTimeout(
+      supabase.auth.getUser(),
+      TIMEOUTS.SESSION_CHECK
+    );
+    user = result.data.user;
+  } catch (error) {
+    // On error or timeout, consider user as unauthenticated
+    console.warn("[middleware] Session validation timeout or error:", error);
+
+    // Clear invalid cookies to allow fresh authentication
+    const authCookies = request.cookies
+      .getAll()
+      .filter((cookie) => cookie.name.startsWith("sb-"));
+
+    authCookies.forEach((cookie) => {
+      supabaseResponse.cookies.delete(cookie.name);
+    });
+
+    user = null;
+  }
 
   // Redirect to login if user is not authenticated and trying to access protected routes
   // Allow access to /auth/* routes (login, callback, etc.) and root

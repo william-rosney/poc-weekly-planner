@@ -188,7 +188,7 @@ familial-planner/
 ```env
 # .env.local (JAMAIS COMMITER)
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxxx
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=xxxxx
 SUPABASE_SERVICE_ROLE_KEY=xxxxx  # Backend only
 
 # Optionnel
@@ -331,7 +331,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 ```
 
