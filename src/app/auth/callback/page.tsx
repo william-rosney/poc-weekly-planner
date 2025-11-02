@@ -1,22 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
 
 /**
- * Page de callback pour l'authentification Magic Link
- *
- * Cette page:
- * 1. Récupère le code PKCE depuis l'URL
- * 2. Échange le code pour une session utilisateur
- * 3. Redirige vers le calendrier ou affiche une erreur
- *
- * Note: Utilise une page client plutôt qu'un Route Handler pour éviter
- * les problèmes de chargement de chunks avec Next.js 16 Turbopack
+ * Composant de chargement affiché pendant la suspension
  */
-export default function AuthCallbackPage() {
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+      <motion.div
+        className="text-center p-8 bg-white rounded-lg shadow-xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <motion.div
+          className="inline-block h-16 w-16 rounded-full border-4 border-solid border-christmas-red border-r-transparent mb-6"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <h1 className="text-2xl font-bold text-christmas-green mb-2">
+          Chargement...
+        </h1>
+        <p className="text-gray-600">Veuillez patienter</p>
+      </motion.div>
+    </div>
+  );
+}
+
+/**
+ * Composant contenant la logique du callback
+ * Doit être wrappé dans Suspense car il utilise useSearchParams()
+ */
+function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +115,7 @@ export default function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
         <motion.div
           className="text-center p-8 bg-white rounded-lg shadow-xl max-w-md"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -117,7 +136,7 @@ export default function AuthCallbackPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
       <motion.div
         className="text-center p-8 bg-white rounded-lg shadow-xl"
         initial={{ opacity: 0, y: 20 }}
@@ -161,5 +180,24 @@ export default function AuthCallbackPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * Page de callback pour l'authentification Magic Link
+ *
+ * Cette page:
+ * 1. Récupère le code PKCE depuis l'URL
+ * 2. Échange le code pour une session utilisateur
+ * 3. Redirige vers le calendrier ou affiche une erreur
+ *
+ * Note: Le composant CallbackContent est wrappé dans Suspense
+ * car il utilise useSearchParams() (requis par Next.js)
+ */
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <CallbackContent />
+    </Suspense>
   );
 }
