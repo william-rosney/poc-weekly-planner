@@ -1,22 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-/**
- * Timeout wrapper pour les appels async
- * Permet d'éviter les blocages infinis si Supabase ne répond pas
- * Timeout court pour une réponse rapide en cas de cookies corrompus
- */
-function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number = 1000
-): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error("Request timeout")), timeoutMs)
-    ),
-  ]);
-}
+import { withTimeout } from "@/lib/timeout";
+import { TIMEOUTS } from "@/lib/constants";
 
 /**
  * Updates the user session in middleware
@@ -65,14 +50,17 @@ export async function updateSession(request: NextRequest) {
   let user = null;
 
   try {
-    // Timeout très court (800ms) pour détecter rapidement les sessions corrompues
-    const result = await withTimeout(supabase.auth.getUser(), 800);
+    // Generous timeout to support slower networks while detecting corrupted sessions
+    const result = await withTimeout(
+      supabase.auth.getUser(),
+      TIMEOUTS.SESSION_CHECK
+    );
     user = result.data.user;
   } catch (error) {
-    // En cas d'erreur ou timeout, on considère l'utilisateur comme non authentifié
+    // On error or timeout, consider user as unauthenticated
     console.warn("[middleware] Session validation timeout or error:", error);
 
-    // Clear les cookies invalides pour permettre une nouvelle connexion
+    // Clear invalid cookies to allow fresh authentication
     const authCookies = request.cookies
       .getAll()
       .filter((cookie) => cookie.name.startsWith("sb-"));
