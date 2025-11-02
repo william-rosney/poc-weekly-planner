@@ -1,17 +1,13 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    "Les variables d'environnement Supabase ne sont pas configurées. " +
-      "Veuillez créer un fichier .env.local avec NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY"
-  );
-}
+import { createBrowserClient } from "@supabase/ssr";
 
 /**
- * Client Supabase pour les opérations côté client
- * Utilisé pour l'authentification, les requêtes de données et les subscriptions en temps réel
+ * Creates a Supabase client for use in browser/client components
+ * Uses createBrowserClient from @supabase/ssr package
+ * Implements a singleton pattern - multiple calls create only one instance
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  );
+}
