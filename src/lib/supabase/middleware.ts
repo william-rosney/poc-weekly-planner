@@ -2,6 +2,23 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
+ * Timeout wrapper pour les appels async
+ * Permet d'éviter les blocages infinis si Supabase ne répond pas
+ * Timeout court pour une réponse rapide en cas de cookies corrompus
+ */
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 1000
+): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), timeoutMs)
+    ),
+  ]);
+}
+
+/**
  * Updates the user session in middleware
  * This function:
  * 1. Refreshes the Auth token by calling supabase.auth.getUser()
@@ -10,6 +27,9 @@ import { NextResponse, type NextRequest } from "next/server";
  *
  * IMPORTANT: Always use supabase.auth.getUser() instead of getSession()
  * to ensure the token is properly revalidated server-side.
+ *
+ * Includes timeout and error handling to prevent infinite loading states
+ * when sessions become invalid (e.g., after server restart).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -42,11 +62,27 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Do not remove this line!
-  // Triggers automatic token refresh and validation
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    // Timeout très court (800ms) pour détecter rapidement les sessions corrompues
+    const result = await withTimeout(supabase.auth.getUser(), 800);
+    user = result.data.user;
+  } catch (error) {
+    // En cas d'erreur ou timeout, on considère l'utilisateur comme non authentifié
+    console.warn("[middleware] Session validation timeout or error:", error);
+
+    // Clear les cookies invalides pour permettre une nouvelle connexion
+    const authCookies = request.cookies
+      .getAll()
+      .filter((cookie) => cookie.name.startsWith("sb-"));
+
+    authCookies.forEach((cookie) => {
+      supabaseResponse.cookies.delete(cookie.name);
+    });
+
+    user = null;
+  }
 
   // Redirect to login if user is not authenticated and trying to access protected routes
   // Allow access to /auth/* routes (login, callback, etc.) and root

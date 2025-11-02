@@ -13,8 +13,28 @@ interface AuthState {
 }
 
 /**
+ * Timeout wrapper pour les appels async
+ * Permet d'éviter les blocages infinis si Supabase ne répond pas
+ * Avec un timeout très court pour une UX réactive
+ */
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 1000
+): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), timeoutMs)
+    ),
+  ]);
+}
+
+/**
  * Hook pour gérer l'authentification et l'état de l'utilisateur
  * Synchronise automatiquement avec Supabase Auth
+ *
+ * Includes timeout and error handling to prevent infinite loading states
+ * when sessions become invalid (e.g., after server restart).
  */
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
@@ -31,37 +51,145 @@ export function useAuth() {
     // Récupérer la session initiale
     const getInitialSession = async () => {
       try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+        // Approche rapide: timeout très court (800ms) pour détecter les sessions corrompues
+        const sessionResult = await withTimeout(
+          supabase.auth.getSession(),
+          800
+        );
 
-        if (error) {
-          console.error("[useAuth] Session error:", error);
-          setState((prev) => ({
-            ...prev,
+        const { session } = sessionResult.data;
+
+        if (!session) {
+          // Pas de session, c'est normal si non connecté
+          setState({
+            user: null,
+            supabaseUser: null,
             loading: false,
-            error: error.message,
-          }));
+            error: null,
+          });
           return;
         }
 
-        if (session?.user) {
-          // Récupérer les données utilisateur de la table users par email
-          const { data: userData, error: userError } = await supabase
-            .from("users")
-            .select("*")
-            .eq("email", session.user.email)
-            .single();
+        // Valider rapidement avec le serveur (timeout court)
+        const {
+          data: { user: supabaseUser },
+          error,
+        } = await withTimeout(supabase.auth.getUser(), 800);
+
+        if (error || !supabaseUser) {
+          // Session invalide, nettoyer silencieusement
+          console.warn("[useAuth] Invalid session detected, clearing...");
+          await withTimeout(supabase.auth.signOut(), 500);
+          setState({
+            user: null,
+            supabaseUser: null,
+            loading: false,
+            error: null,
+          });
+          return;
+        }
+
+        // Session valide, récupérer les données utilisateur
+        if (supabaseUser.email) {
+          const getUserData = async () => {
+            return await supabase
+              .from("users")
+              .select("*")
+              .eq("email", supabaseUser.email)
+              .single();
+          };
+
+          const { data: userData, error: userError } = await withTimeout(
+            getUserData(),
+            1000
+          );
 
           if (userError) {
             console.error("[useAuth] Error fetching user data:", userError);
-            setState((prev) => ({
-              ...prev,
-              supabaseUser: session.user,
+            setState({
+              user: null,
+              supabaseUser,
               loading: false,
-            }));
+              error: null,
+            });
             return;
+          }
+
+          // Synchroniser auth_id si pas déjà fait
+          if (userData && !userData.auth_id) {
+            await supabase
+              .from("users")
+              .update({ auth_id: supabaseUser.id })
+              .eq("email", supabaseUser.email);
+            userData.auth_id = supabaseUser.id;
+          }
+
+          setState({
+            user: userData,
+            supabaseUser,
+            loading: false,
+            error: null,
+          });
+        } else {
+          setState({
+            user: null,
+            supabaseUser: null,
+            loading: false,
+            error: null,
+          });
+        }
+      } catch (error) {
+        // Timeout ou erreur: nettoyer immédiatement et continuer
+        console.warn(
+          "[useAuth] Session check failed (possibly after server restart):",
+          error
+        );
+
+        // Nettoyer la session corrompue (avec timeout pour ne pas bloquer)
+        try {
+          await withTimeout(supabase.auth.signOut(), 500);
+        } catch (signOutError) {
+          // Ignorer les erreurs de sign out, juste continuer
+          console.warn("[useAuth] Could not sign out:", signOutError);
+        }
+
+        // Continuer sans bloquer l'UI
+        setState({
+          user: null,
+          supabaseUser: null,
+          loading: false,
+          error: null,
+        });
+      }
+    };
+
+    getInitialSession();
+
+    // Écouter les changements d'authentification
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      try {
+        if (session?.user) {
+          // Récupérer les données utilisateur par email avec timeout court
+          const getUserData = async () => {
+            return await supabase
+              .from("users")
+              .select("*")
+              .eq("email", session.user.email)
+              .single();
+          };
+
+          const { data: userData, error } = await withTimeout(
+            getUserData(),
+            1000
+          );
+
+          if (error) {
+            console.warn(
+              "[useAuth] Error fetching user in auth state change:",
+              error
+            );
           }
 
           // Synchroniser auth_id si pas déjà fait
@@ -74,60 +202,40 @@ export function useAuth() {
           }
 
           setState({
-            user: userData,
+            user: userData || null,
             supabaseUser: session.user,
             loading: false,
             error: null,
           });
         } else {
-          setState((prev) => ({ ...prev, loading: false }));
+          setState({
+            user: null,
+            supabaseUser: null,
+            loading: false,
+            error: null,
+          });
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération de la session:", error);
-        setState((prev) => ({
-          ...prev,
-          loading: false,
-          error: "Erreur de connexion",
-        }));
-      }
-    };
-
-    getInitialSession();
-
-    // Écouter les changements d'authentification
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        // Récupérer les données utilisateur par email
-        const { data: userData } = await supabase
-          .from("users")
-          .select("*")
-          .eq("email", session.user.email)
-          .single();
-
-        // Synchroniser auth_id si pas déjà fait
-        if (userData && !userData.auth_id) {
-          await supabase
-            .from("users")
-            .update({ auth_id: session.user.id })
-            .eq("email", session.user.email);
-          userData.auth_id = session.user.id;
+        console.warn(
+          "[useAuth] Error in auth state change listener:",
+          error
+        );
+        // En cas d'erreur, au moins mettre à jour avec l'utilisateur Supabase
+        if (session?.user) {
+          setState({
+            user: null,
+            supabaseUser: session.user,
+            loading: false,
+            error: null,
+          });
+        } else {
+          setState({
+            user: null,
+            supabaseUser: null,
+            loading: false,
+            error: null,
+          });
         }
-
-        setState({
-          user: userData || null,
-          supabaseUser: session.user,
-          loading: false,
-          error: null,
-        });
-      } else {
-        setState({
-          user: null,
-          supabaseUser: null,
-          loading: false,
-          error: null,
-        });
       }
     });
 
