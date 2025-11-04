@@ -46,23 +46,56 @@ function CallbackContent() {
         const supabase = createClient();
         const next = searchParams.get("next") ?? "/calendar";
 
-        // For magic links, the callback verifies/exchanges token parameters in the URL to establish the session.
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const code = searchParams.get("code");
+        const tokenHash = searchParams.get("token_hash");
+        const type = searchParams.get("type");
 
-        if (error) {
-          console.error("[Callback] Session error:", error);
-          setError(`Erreur: ${error.message}`);
-          setTimeout(() => router.push("/login"), 3000);
-          return;
-        }
-
-        if (session) {
+        // Check for existing session first (local Supabase creates session before redirect)
+        const { data: { session: existingSession } } = await supabase.auth.getSession();
+        if (existingSession) {
           router.push(next);
           return;
         }
 
-        // No session found
-        setError("Session non trouvée");
+        // Handle PKCE flow (production with code parameter)
+        if (code) {
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+          if (exchangeError) {
+            console.error("[Callback] PKCE exchange error:", exchangeError);
+            setError(`Erreur: ${exchangeError.message}`);
+            setTimeout(() => router.push("/login"), 3000);
+            return;
+          }
+
+          if (data.session) {
+            router.push(next);
+            return;
+          }
+        }
+
+        // Handle implicit flow (production with token_hash)
+        if (tokenHash && type) {
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: type as "email" | "magiclink",
+          });
+
+          if (verifyError) {
+            console.error("[Callback] Token verification error:", verifyError);
+            setError(`Erreur: ${verifyError.message}`);
+            setTimeout(() => router.push("/login"), 3000);
+            return;
+          }
+
+          if (data.session) {
+            router.push(next);
+            return;
+          }
+        }
+
+        // No valid authentication found
+        setError("Paramètres d'authentification invalides");
         setTimeout(() => router.push("/login"), 3000);
       } catch (err: unknown) {
         console.error("[Callback] Error:", err);
@@ -148,9 +181,10 @@ function CallbackContent() {
 /**
  * Page de callback pour l'authentification Magic Link
  *
- * Cette page:
- * 1. Vérifie si une session existe (créée par le magic link)
- * 2. Redirige vers le calendrier ou affiche une erreur
+ * Cette page gère deux scénarios:
+ * 1. Local Supabase: Vérifie la session existante (déjà créée avant redirect)
+ * 2. Production: Échange le code/token_hash depuis l'URL pour créer la session
+ * 3. Redirige vers le calendrier ou affiche une erreur
  *
  * Note: Le composant CallbackContent est wrappé dans Suspense
  * car il utilise useSearchParams() (requis par Next.js)
