@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@/lib/types";
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import { withTimeout } from "@/lib/timeout";
-import { TIMEOUTS } from "@/lib/constants";
 
 interface AuthState {
   user: User | null;
@@ -17,9 +15,6 @@ interface AuthState {
 /**
  * Hook to manage authentication and user state
  * Automatically synchronizes with Supabase Auth
- *
- * Includes timeout and error handling to prevent infinite loading states
- * when sessions become invalid (e.g., after server restart).
  */
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
@@ -30,22 +25,14 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    // Create Supabase client
     const supabase = createClient();
 
-    // Retrieve initial session
+    // Get initial session
     const getInitialSession = async () => {
       try {
-        // Fast check with generous timeout to detect corrupted sessions
-        const sessionResult = await withTimeout(
-          supabase.auth.getSession(),
-          TIMEOUTS.SESSION_CHECK
-        );
-
-        const { session } = sessionResult.data;
+        const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-          // No session - normal if not logged in
           setState({
             user: null,
             supabaseUser: null,
@@ -55,72 +42,72 @@ export function useAuth() {
           return;
         }
 
-        // Validate with server using generous timeout
-        const {
-          data: { user: supabaseUser },
-          error,
-        } = await withTimeout(supabase.auth.getUser(), TIMEOUTS.SESSION_CHECK);
-
-        if (error || !supabaseUser) {
-          // Invalid session, clean up silently
-          console.warn("[useAuth] Invalid session detected, clearing...");
-          await withTimeout(supabase.auth.signOut(), TIMEOUTS.SIGN_OUT);
-          setState({
-            user: null,
-            supabaseUser: null,
-            loading: false,
-            error: null,
-          });
-          return;
-        }
-
-        // Valid session, fetch user data
-        if (supabaseUser.email) {
-          const getUserData = async () => {
-            return await supabase
-              .from("users")
-              .select("*")
-              .eq("email", supabaseUser.email)
-              .single();
-          };
-
-          const { data: userData, error: userError } = await withTimeout(
-            getUserData(),
-            TIMEOUTS.USER_FETCH
-          );
+        // Fetch user data
+        if (session.user.email) {
+          const { data: userData, error: userError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", session.user.email)
+            .single();
 
           if (userError) {
             console.error("[useAuth] Error fetching user data:", userError);
-            setState({
-              user: null,
-              supabaseUser,
-              loading: false,
-              error: null,
-            });
-            return;
           }
 
-          // Synchronize auth_id if not already set
+          // Sync auth_id if needed
           if (userData && !userData.auth_id) {
-            try {
-              const updateAuthId = async () => {
-                return await supabase
-                  .from("users")
-                  .update({ auth_id: supabaseUser.id })
-                  .eq("email", supabaseUser.email);
-              };
-
-              await withTimeout(updateAuthId(), TIMEOUTS.DB_UPDATE);
-              userData.auth_id = supabaseUser.id;
-            } catch (updateError) {
-              console.warn("[useAuth] Failed to update auth_id:", updateError);
-              // Continue anyway - not critical
-            }
+            await supabase
+              .from("users")
+              .update({ auth_id: session.user.id })
+              .eq("email", session.user.email);
+            userData.auth_id = session.user.id;
           }
 
           setState({
-            user: userData,
-            supabaseUser,
+            user: userData || null,
+            supabaseUser: session.user,
+            loading: false,
+            error: null,
+          });
+        }
+      } catch (error) {
+        console.error("[useAuth] Session check failed:", error);
+        setState({
+          user: null,
+          supabaseUser: null,
+          loading: false,
+          error: null,
+        });
+      }
+    };
+
+    // Initialize and listen for changes
+    const initializeAuth = async () => {
+      await getInitialSession();
+
+      // Listen for auth state changes
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        if (session?.user) {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", session.user.email)
+            .single();
+
+          // Sync auth_id if needed
+          if (userData && !userData.auth_id) {
+            await supabase
+              .from("users")
+              .update({ auth_id: session.user.id })
+              .eq("email", session.user.email);
+            userData.auth_id = session.user.id;
+          }
+
+          setState({
+            user: userData || null,
+            supabaseUser: session.user,
             loading: false,
             error: null,
           });
@@ -132,128 +119,15 @@ export function useAuth() {
             error: null,
           });
         }
-      } catch (error) {
-        // Timeout or error: clean up immediately and continue
-        console.warn(
-          "[useAuth] Session check failed (possibly after server restart):",
-          error
-        );
-
-        // Clean up corrupted session (with timeout to avoid blocking)
-        try {
-          await withTimeout(supabase.auth.signOut(), TIMEOUTS.SIGN_OUT);
-        } catch (signOutError) {
-          // Ignore sign out errors, just continue
-          console.warn("[useAuth] Could not sign out:", signOutError);
-        }
-
-        // Continue without blocking UI
-        setState({
-          user: null,
-          supabaseUser: null,
-          loading: false,
-          error: null,
-        });
-      }
-    };
-
-    // IMPORTANT: Wait for initial session before setting up listener
-    // This prevents race conditions between initialization and auth state changes
-    let subscription: { unsubscribe: () => void } | null = null;
-
-    const initializeAuth = async () => {
-      await getInitialSession();
-
-      // Listen for authentication changes
-      const {
-        data: { subscription: authSubscription },
-      } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        try {
-          if (session?.user) {
-            // Fetch user data by email with timeout
-            const getUserData = async () => {
-              return await supabase
-                .from("users")
-                .select("*")
-                .eq("email", session.user.email)
-                .single();
-            };
-
-            const { data: userData, error } = await withTimeout(
-              getUserData(),
-              TIMEOUTS.USER_FETCH
-            );
-
-            if (error) {
-              console.warn(
-                "[useAuth] Error fetching user in auth state change:",
-                error
-              );
-            }
-
-            // Synchronize auth_id if not already set
-            if (userData && !userData.auth_id) {
-              try {
-                const updateAuthId = async () => {
-                  return await supabase
-                    .from("users")
-                    .update({ auth_id: session.user.id })
-                    .eq("email", session.user.email);
-                };
-
-                await withTimeout(updateAuthId(), TIMEOUTS.DB_UPDATE);
-                userData.auth_id = session.user.id;
-              } catch (updateError) {
-                console.warn(
-                  "[useAuth] Failed to update auth_id:",
-                  updateError
-                );
-                // Continue anyway - not critical
-              }
-            }
-
-            setState({
-              user: userData || null,
-              supabaseUser: session.user,
-              loading: false,
-              error: null,
-            });
-          } else {
-            setState({
-              user: null,
-              supabaseUser: null,
-              loading: false,
-              error: null,
-            });
-          }
-        } catch (error) {
-          console.warn("[useAuth] Error in auth state change listener:", error);
-          // On error, at least update with Supabase user
-          if (session?.user) {
-            setState({
-              user: null,
-              supabaseUser: session.user,
-              loading: false,
-              error: null,
-            });
-          } else {
-            setState({
-              user: null,
-              supabaseUser: null,
-              loading: false,
-              error: null,
-            });
-          }
-        }
       });
 
-      subscription = authSubscription;
+      return subscription;
     };
 
-    initializeAuth();
+    const subscriptionPromise = initializeAuth();
 
     return () => {
-      subscription?.unsubscribe();
+      subscriptionPromise.then((sub) => sub?.unsubscribe());
     };
   }, []);
 
@@ -263,10 +137,17 @@ export function useAuth() {
   const signInWithMagicLink = async (email: string) => {
     const supabase = createClient();
     try {
+      // Use localhost:3000 explicitly for local dev to match Supabase config
+      const redirectUrl =
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3000/auth/callback"
+          : `${window.location.origin}/auth/callback`;
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectUrl,
+          shouldCreateUser: false, // Don't create new users, only allow existing ones
         },
       });
 
