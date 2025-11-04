@@ -56,11 +56,15 @@ export function useAuth() {
 
           // Sync auth_id if needed
           if (userData && !userData.auth_id) {
-            await supabase
+            const { error: updateError } = await supabase
               .from("users")
               .update({ auth_id: session.user.id })
               .eq("email", session.user.email);
-            userData.auth_id = session.user.id;
+            if (updateError) {
+              console.error("[useAuth] Error updating auth_id:", updateError);
+            } else {
+              userData.auth_id = session.user.id;
+            }
           }
 
           setState({
@@ -98,11 +102,15 @@ export function useAuth() {
 
           // Sync auth_id if needed
           if (userData && !userData.auth_id) {
-            await supabase
+            const { error: updateError } = await supabase
               .from("users")
               .update({ auth_id: session.user.id })
               .eq("email", session.user.email);
-            userData.auth_id = session.user.id;
+            if (!updateError) {
+              userData.auth_id = session.user.id;
+            } else {
+              console.error("[useAuth] Error updating auth_id in state change listener:", updateError);
+            }
           }
 
           setState({
@@ -147,7 +155,7 @@ export function useAuth() {
         email,
         options: {
           emailRedirectTo: redirectUrl,
-          shouldCreateUser: false, // Don't create new users, only allow existing ones
+          shouldCreateUser: true, // Allow new users to sign up via magic link
         },
       });
 
