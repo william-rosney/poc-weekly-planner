@@ -46,7 +46,7 @@ function CallbackContent() {
         const supabase = createClient();
         const next = searchParams.get("next") ?? "/calendar";
 
-        // Magic links create session before redirect, so just check for existing session
+        // For magic links, the callback verifies/exchanges token parameters in the URL to establish the session.
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error) {
