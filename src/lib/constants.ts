@@ -21,18 +21,3 @@ export const COLORS = {
   PINK: "pink",
   ORANGE: "orange",
 } as const;
-
-/**
- * Timeout constants for async operations (in milliseconds)
- * These values balance user experience with reliability for slower connections
- */
-export const TIMEOUTS = {
-  /** Session validation timeout - generous for slower networks */
-  SESSION_CHECK: 3000,
-  /** User data fetch timeout - allows for database latency */
-  USER_FETCH: 5000,
-  /** Database update operations timeout */
-  DB_UPDATE: 3000,
-  /** Sign out operation timeout */
-  SIGN_OUT: 2000,
-} as const;

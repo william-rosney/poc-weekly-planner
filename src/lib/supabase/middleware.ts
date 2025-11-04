@@ -1,7 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { withTimeout } from "@/lib/timeout";
-import { TIMEOUTS } from "@/lib/constants";
 
 /**
  * Updates the user session in middleware
@@ -12,9 +10,6 @@ import { TIMEOUTS } from "@/lib/constants";
  *
  * IMPORTANT: Always use supabase.auth.getUser() instead of getSession()
  * to ensure the token is properly revalidated server-side.
- *
- * Includes timeout and error handling to prevent infinite loading states
- * when sessions become invalid (e.g., after server restart).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -50,25 +45,10 @@ export async function updateSession(request: NextRequest) {
   let user = null;
 
   try {
-    // Generous timeout to support slower networks while detecting corrupted sessions
-    const result = await withTimeout(
-      supabase.auth.getUser(),
-      TIMEOUTS.SESSION_CHECK
-    );
-    user = result.data.user;
+    const { data: { user: validatedUser } } = await supabase.auth.getUser();
+    user = validatedUser;
   } catch (error) {
-    // On error or timeout, consider user as unauthenticated
-    console.warn("[middleware] Session validation timeout or error:", error);
-
-    // Clear invalid cookies to allow fresh authentication
-    const authCookies = request.cookies
-      .getAll()
-      .filter((cookie) => cookie.name.startsWith("sb-"));
-
-    authCookies.forEach((cookie) => {
-      supabaseResponse.cookies.delete(cookie.name);
-    });
-
+    console.error("[middleware] Session validation error:", error);
     user = null;
   }
 

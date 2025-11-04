@@ -11,7 +11,17 @@
     "lint:check": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:restart": "supabase stop && supabase start",
+    "supabase:reset": "supabase db reset",
+    "supabase:status": "supabase status",
+    "supabase:studio": "echo Opening Supabase Studio at http://127.0.0.1:54323",
+    "dev:local": "npm run supabase:start && npm run dev",
+    "db:migrate": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "repository": {
     "type": "git",
