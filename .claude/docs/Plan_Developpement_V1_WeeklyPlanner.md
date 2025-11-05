@@ -54,7 +54,7 @@ Une page de connexion fonctionnelle avec authentification Supabase.
 
 ---
 
-## 🧩 Étape 2 – Tableau de bord de la semaine 🚧 **EN COURS**
+## 🧩 Étape 2 – Tableau de bord de la semaine ✅ **TERMINÉE**
 
 ### 🎯 Objectif
 
@@ -63,16 +63,26 @@ Afficher une **vue calendrier** de la semaine et permettre la navigation entre s
 ### 🧱 Tâches
 
 - [x] Créer la table `events` dans Supabase (migration préparée)
-- [ ] Intégrer **FullCalendar** dans la page `/calendar`
-- [ ] Configurer la vue hebdomadaire sur mobile et desktop
+- [x] Intégrer **FullCalendar** dans la page `/calendar`
+- [x] Configurer la vue hebdomadaire sur mobile et desktop
   - Mobile : affichage d'un seul jour à la fois
   - Web : affichage de la semaine complète
-- [ ] Ajouter la navigation entre semaines
-- [ ] Charger les événements depuis Supabase (SSR ou Realtime)
+- [x] Ajouter la navigation entre semaines
+- [x] Charger les événements depuis Supabase
 
 ### ✅ Livrable
 
 Un calendrier fonctionnel affichant les événements enregistrés dans la base.
+
+**Fichiers créés:**
+- [src/hooks/useEvents.ts](../../src/hooks/useEvents.ts) - Hook pour gérer les événements (CRUD)
+- [src/components/calendar/Calendar.tsx](../../src/components/calendar/Calendar.tsx) - Composant calendrier avec FullCalendar
+
+**Fichiers modifiés:**
+- [src/app/calendar/page.tsx](../../src/app/calendar/page.tsx) - Intégration du calendrier
+
+**Packages installés:**
+- `@fullcalendar/core`, `@fullcalendar/react`, `@fullcalendar/daygrid`, `@fullcalendar/timegrid`, `@fullcalendar/interaction`
 
 ---
 
@@ -206,7 +216,7 @@ Une version hébergée, accessible à tous les membres de la famille.
 | ----- | -------------- | ----------- | --------------------------------------------- |
 | 0     | Initialisation | ✅ Terminée | Setup du projet Next.js + Tailwind + Supabase |
 | 1     | Auth           | ✅ Terminée | Magic Link + Sélecteur d'utilisateur          |
-| 2     | Calendrier     | 🚧 En cours | Vue hebdo avec FullCalendar                   |
+| 2     | Calendrier     | ✅ Terminée | Vue hebdo avec FullCalendar                   |
 | 3     | CRUD           | ⏳ À faire  | Gestion complète des événements               |
 | 4     | Votes          | ⏳ À faire  | Système de participation                      |
 | 5     | UX             | ⏳ À faire  | Animations + UI responsive                    |

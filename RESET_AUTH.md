@@ -38,6 +38,7 @@ npm run dev
 ## Step 5: Access Via Localhost (CRITICAL!)
 
 Open a **NEW incognito/private window** and go to:
+
 ```
 http://localhost:3000
 ```
@@ -51,9 +52,11 @@ http://localhost:3000
 3. Open Mailpit: http://127.0.0.1:54324
 4. Click the email to open it
 5. **CHECK the magic link URL** - it should be:
+
    ```
    http://localhost:3000/auth/callback?token_hash=...&type=magiclink
    ```
+
    **NOT**: `http://127.0.0.1:54321/auth/v1/verify?...`
 
 6. Click the magic link

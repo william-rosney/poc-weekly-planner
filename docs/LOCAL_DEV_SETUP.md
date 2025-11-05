@@ -7,15 +7,18 @@ Your Supabase local development environment is now fully configured! This guide 
 ## What Was Set Up
 
 ### 1. Supabase Configuration
+
 - **Local Instance**: Full Supabase stack running in Docker containers
 - **Migrations**: Automatically applied (users table, events table, RLS policies)
 - **Seed Data**: Test users and sample events pre-loaded
 
 ### 2. Environment Variables
+
 - **`.env.development.local`**: Local Supabase credentials (auto-used in dev mode)
 - **`.env.local`**: Production Supabase credentials (used for production builds)
 
 ### 3. NPM Scripts
+
 Added convenient scripts to `package.json` for managing Supabase:
 
 ```bash
@@ -39,12 +42,12 @@ npm run dev:local           # Start Supabase + Next.js together
 
 When running locally (`npm run supabase:start`), you have access to:
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **Studio** | http://127.0.0.1:54323 | Web UI for database management |
-| **API** | http://127.0.0.1:54321 | REST API endpoint |
-| **Database** | postgresql://postgres:postgres@127.0.0.1:54322/postgres | Direct database connection |
-| **Mailpit** | http://127.0.0.1:54324 | View magic link emails (email testing) |
+| Service      | URL                                                     | Purpose                                |
+| ------------ | ------------------------------------------------------- | -------------------------------------- |
+| **Studio**   | http://127.0.0.1:54323                                  | Web UI for database management         |
+| **API**      | http://127.0.0.1:54321                                  | REST API endpoint                      |
+| **Database** | postgresql://postgres:postgres@127.0.0.1:54322/postgres | Direct database connection             |
+| **Mailpit**  | http://127.0.0.1:54324                                  | View magic link emails (email testing) |
 
 ### Local Credentials
 
@@ -95,12 +98,12 @@ npm run dev
 
 When running locally, these test users are available:
 
-| Email | Name | Role |
-|-------|------|------|
-| dev1@example.com | Alice Developer | admin |
-| dev2@example.com | Bob Tester | member |
-| dev3@example.com | Charlie Smith | member |
-| dev4@example.com | Diana Jones | member |
+| Email            | Name            | Role   |
+| ---------------- | --------------- | ------ |
+| dev1@example.com | Alice Developer | admin  |
+| dev2@example.com | Bob Tester      | member |
+| dev3@example.com | Charlie Smith   | member |
+| dev4@example.com | Diana Jones     | member |
 
 ### Viewing Magic Link Emails
 
@@ -112,6 +115,7 @@ When running locally, these test users are available:
 ### Supabase Studio
 
 Open http://127.0.0.1:54323 to:
+
 - Browse database tables
 - Run SQL queries
 - View RLS policies
@@ -129,6 +133,7 @@ npm run supabase:reset
 ```
 
 This will:
+
 - Drop all tables
 - Reapply all migrations
 - Reload seed data
@@ -172,6 +177,7 @@ This creates `src/lib/database.types.ts` with type-safe database interfaces.
 ### Deploy with Docker
 
 Your existing Docker setup should work. Just ensure:
+
 - `.env.local` has production Supabase credentials
 - Site URL is correctly configured in Supabase dashboard
 
@@ -213,6 +219,7 @@ port = 54323  # Change if needed
 **If magic links redirect to wrong URL** (e.g., `http://127.0.0.1:54321/auth/v1/verify?` instead of `http://localhost:3000/auth/callback`):
 
 1. Check `supabase/config.toml` has correct configuration:
+
    ```toml
    [auth]
    site_url = "http://localhost:3000"
@@ -225,11 +232,13 @@ port = 54323  # Change if needed
    ```
 
 **Local Development**:
+
 - Check Mailpit: http://127.0.0.1:54324
 - Magic links are captured locally, not sent to real emails
 - Click the magic link in Mailpit - it should redirect to `http://localhost:3000/auth/callback`
 
 **Production**:
+
 - Verify Site URL in Supabase dashboard
 - Check redirect URLs include your callback URL
 - Ensure `.env.local` has correct production credentials

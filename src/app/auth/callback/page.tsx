@@ -51,7 +51,9 @@ function CallbackContent() {
         const type = searchParams.get("type");
 
         // Check for existing session first (local Supabase creates session before redirect)
-        const { data: { session: existingSession } } = await supabase.auth.getSession();
+        const {
+          data: { session: existingSession },
+        } = await supabase.auth.getSession();
         if (existingSession) {
           router.push(next);
           return;
@@ -59,7 +61,8 @@ function CallbackContent() {
 
         // Handle PKCE flow (production with code parameter)
         if (code) {
-          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          const { data, error: exchangeError } =
+            await supabase.auth.exchangeCodeForSession(code);
 
           if (exchangeError) {
             console.error("[Callback] PKCE exchange error:", exchangeError);

@@ -45,7 +45,9 @@ export async function updateSession(request: NextRequest) {
   let user = null;
 
   try {
-    const { data: { user: validatedUser } } = await supabase.auth.getUser();
+    const {
+      data: { user: validatedUser },
+    } = await supabase.auth.getUser();
     user = validatedUser;
   } catch (error) {
     console.error("[middleware] Session validation error:", error);
