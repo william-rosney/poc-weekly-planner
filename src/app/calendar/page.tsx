@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useEvents } from "@/hooks/useEvents";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { SnowfallBackground } from "@/components/christmas/SnowfallBackground";
 import { Calendar } from "@/components/calendar/Calendar";
 import { Event } from "@/lib/types";
@@ -121,18 +121,7 @@ export default function CalendarPage() {
           transition={{ delay: 0.15, duration: 0.3, ease: "easeOut" }}
         >
           <Card className="border-2 border-christmas-gold/40 shadow-2xl backdrop-blur-sm bg-white/95">
-            <CardHeader className="border-b-2 border-christmas-gold/30 bg-linear-to-r from-christmas-cream/30 to-transparent">
-              <CardTitle className="text-christmas-red flex items-center gap-2 text-xl font-bold">
-                <motion.span
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                >
-                  🎁
-                </motion.span>
-                Calendrier de la semaine
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               {error && (
                 <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
                   <p className="text-red-800 font-semibold">
