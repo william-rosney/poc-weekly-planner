@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Event } from "@/lib/types";
-import { EventClickArg, DateSelectArg } from "@fullcalendar/core";
+import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ interface CalendarProps {
   loading?: boolean;
   onEventClick?: (event: Event) => void;
   onDateSelect?: (start: Date, end: Date) => void;
+  onEventUpdate?: (eventId: string, start: Date, end: Date) => Promise<void>;
 }
 
 /**
@@ -26,6 +27,7 @@ export function Calendar({
   loading = false,
   onEventClick,
   onDateSelect,
+  onEventUpdate,
 }: CalendarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [currentTitle, setCurrentTitle] = useState("");
@@ -118,6 +120,60 @@ export function Calendar({
     calendarApi.unselect();
   };
 
+  // Handle event drop (drag and drop)
+  const handleEventDrop = async (dropInfo: EventDropArg) => {
+    if (!onEventUpdate) {
+      // Revert if no update handler
+      dropInfo.revert();
+      return;
+    }
+
+    const { event } = dropInfo;
+    const eventId = event.id;
+    const newStart = event.start;
+    const newEnd = event.end;
+
+    if (!eventId || !newStart || !newEnd) {
+      dropInfo.revert();
+      return;
+    }
+
+    try {
+      await onEventUpdate(eventId, newStart, newEnd);
+    } catch (error: unknown) {
+      console.error("[Calendar] Error updating event:", error);
+      dropInfo.revert();
+      alert("Erreur lors du déplacement de l'événement");
+    }
+  };
+
+  // Handle event resize
+  const handleEventResize = async (resizeInfo: { event: { id: string; start: Date | null; end: Date | null }; revert: () => void }) => {
+    if (!onEventUpdate) {
+      // Revert if no update handler
+      resizeInfo.revert();
+      return;
+    }
+
+    const { event } = resizeInfo;
+    const eventId = event.id;
+    const newStart = event.start;
+    const newEnd = event.end;
+
+    if (!eventId || !newStart || !newEnd) {
+      resizeInfo.revert();
+      return;
+    }
+
+    try {
+      await onEventUpdate(eventId, newStart, newEnd);
+    } catch (error: unknown) {
+      console.error("[Calendar] Error resizing event:", error);
+      resizeInfo.revert();
+      alert("Erreur lors du redimensionnement de l'événement");
+    }
+  };
+
   return (
     <div className="calendar-container relative h-full flex flex-col">
       {loading && (
@@ -191,6 +247,12 @@ export function Calendar({
             week: "Semaine",
             day: "Jour",
           }}
+          // Drag and drop
+          editable={!!onEventUpdate}
+          eventDrop={handleEventDrop}
+          eventResize={handleEventResize}
+          eventDurationEditable={true}
+          eventStartEditable={true}
           // Styling
           eventClassNames="cursor-pointer hover:opacity-80 transition-opacity"
           dayCellClassNames="hover:bg-christmas-cream/30 transition-colors"
@@ -288,6 +350,31 @@ export function Calendar({
           background-color: oklch(
             0.45 0.16 25 / 0.1
           ) !important; /* christmas-red with opacity */
+        }
+
+        /* Drag and drop styles */
+        .fc-event-dragging {
+          opacity: 0.7;
+          cursor: move !important;
+          z-index: 999;
+        }
+
+        .fc-event-resizing {
+          opacity: 0.7;
+        }
+
+        .fc-event.fc-event-draggable {
+          cursor: move;
+        }
+
+        .fc-event.fc-event-resizable {
+          cursor: ew-resize;
+        }
+
+        .fc-event:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          transition: all 0.2s ease;
         }
 
         /* Responsive adjustments */

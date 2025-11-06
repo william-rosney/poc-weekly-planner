@@ -136,6 +136,21 @@ export default function CalendarPage() {
     }
   };
 
+  /**
+   * Gère le drag and drop d'un événement (modification de date/heure)
+   */
+  const handleEventUpdate = async (eventId: string, start: Date, end: Date) => {
+    const { success, error: updateError } = await updateEvent(eventId, {
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+    });
+
+    if (!success) {
+      console.error("[CalendarPage] Error updating event via drag:", updateError);
+      throw new Error(updateError || "Erreur lors de la mise à jour");
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 relative overflow-hidden">
@@ -234,6 +249,7 @@ export default function CalendarPage() {
                   loading={eventsLoading}
                   onEventClick={handleEventClick}
                   onDateSelect={handleDateSelect}
+                  onEventUpdate={handleEventUpdate}
                 />
               </div>
             </CardContent>
