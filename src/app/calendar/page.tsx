@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SnowfallBackground } from "@/components/christmas/SnowfallBackground";
 import { Calendar } from "@/components/calendar/Calendar";
+import { EventFormDrawer } from "@/components/calendar/EventFormDrawer";
+import { FAB } from "@/components/calendar/FAB";
 import { Event } from "@/lib/types";
+import { EventFormValues } from "@/lib/validations/event";
 
 /**
  * Page du calendrier hebdomadaire
@@ -18,7 +21,22 @@ import { Event } from "@/lib/types";
 export default function CalendarPage() {
   const router = useRouter();
   const { user, loading: authLoading, isAuthenticated, signOut } = useAuth();
-  const { events, loading: eventsLoading, error } = useEvents();
+  const {
+    events,
+    loading: eventsLoading,
+    error,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+  } = useEvents();
+
+  // État pour le drawer et l'événement sélectionné
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [prefilledDates, setPrefilledDates] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -31,12 +49,91 @@ export default function CalendarPage() {
     router.push("/login");
   };
 
-  const handleEventClick = (_event: Event) => {
-    // TODO: Ouvrir un modal avec les détails de l'événement (Étape 3)
+  /**
+   * Ouvre le drawer pour créer un nouvel événement via le FAB
+   */
+  const handleCreateEvent = () => {
+    setSelectedEvent(null);
+    setPrefilledDates(null);
+    setIsDrawerOpen(true);
   };
 
-  const handleDateSelect = (_start: Date, _end: Date) => {
-    // TODO: Ouvrir un modal pour créer un événement (Étape 3)
+  /**
+   * Ouvre le drawer en mode édition quand on clique sur un événement
+   */
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setPrefilledDates(null);
+    setIsDrawerOpen(true);
+  };
+
+  /**
+   * Ouvre le drawer avec dates pré-remplies quand on sélectionne une plage horaire
+   */
+  const handleDateSelect = (start: Date, end: Date) => {
+    setSelectedEvent(null);
+    setPrefilledDates({ start, end });
+    setIsDrawerOpen(true);
+  };
+
+  /**
+   * Gère la soumission du formulaire (création ou modification)
+   */
+  const handleFormSubmit = async (values: EventFormValues) => {
+    try {
+      if (selectedEvent) {
+        // Mode édition
+        const { success, error: updateError } = await updateEvent(
+          selectedEvent.id,
+          {
+            title: values.title,
+            start_time: values.start_time.toISOString(),
+            end_time: values.end_time.toISOString(),
+            description: values.description,
+            link: values.link,
+            cost_per_person: values.cost_per_person,
+            color: values.color,
+          }
+        );
+
+        if (!success) {
+          console.error("[CalendarPage] Error updating event:", updateError);
+          alert("Erreur lors de la modification de l'événement");
+        }
+      } else {
+        // Mode création
+        const { success, error: createError } = await createEvent({
+          title: values.title,
+          start_time: values.start_time.toISOString(),
+          end_time: values.end_time.toISOString(),
+          description: values.description,
+          link: values.link,
+          cost_per_person: values.cost_per_person,
+          color: values.color,
+          user_id: values.user_id,
+        });
+
+        if (!success) {
+          console.error("[CalendarPage] Error creating event:", createError);
+          alert("Erreur lors de la création de l'événement");
+        }
+      }
+    } catch (err: unknown) {
+      console.error("[CalendarPage] Unexpected error:", err);
+      alert("Une erreur inattendue s'est produite");
+    }
+  };
+
+  /**
+   * Gère la suppression d'un événement
+   */
+  const handleDeleteEvent = async (eventId: string) => {
+    const { success, error: deleteError } = await deleteEvent(eventId);
+
+    if (!success) {
+      console.error("[CalendarPage] Error deleting event:", deleteError);
+      alert("Erreur lors de la suppression de l'événement");
+    }
   };
 
   if (authLoading) {
@@ -143,6 +240,20 @@ export default function CalendarPage() {
           </Card>
         </motion.div>
       </main>
+
+      {/* Floating Action Button */}
+      <FAB onClick={handleCreateEvent} />
+
+      {/* Event Form Drawer */}
+      <EventFormDrawer
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        event={selectedEvent}
+        userId={user.id}
+        prefilledDates={prefilledDates}
+        onSubmit={handleFormSubmit}
+        onDelete={handleDeleteEvent}
+      />
     </div>
   );
 }
