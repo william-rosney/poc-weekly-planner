@@ -119,7 +119,7 @@ export function Calendar({
   };
 
   return (
-    <div className="calendar-container relative">
+    <div className="calendar-container relative h-full flex flex-col">
       {loading && (
         <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
           <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-christmas-red border-r-transparent"></div>
@@ -127,7 +127,7 @@ export function Calendar({
       )}
 
       {/* Custom navigation for both desktop and mobile */}
-      <div className="flex items-center justify-center gap-4 mb-4">
+      <div className="flex items-center justify-center gap-4 mb-4 shrink-0">
         <Button
           variant="ghost"
           size="sm"
@@ -163,37 +163,39 @@ export function Calendar({
         </Button>
       </div>
 
-      <FullCalendar
-        ref={calendarRef}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={isMobile ? "timeGridDay" : "timeGridWeek"}
-        headerToolbar={false}
-        datesSet={handleDatesSet}
-        events={calendarEvents}
-        eventClick={handleEventClick}
-        select={handleDateSelect}
-        selectable={true}
-        selectMirror={true}
-        dayMaxEvents={true}
-        weekends={true}
-        slotMinTime="06:00:00"
-        slotMaxTime="23:00:00"
-        height="auto"
-        locale="fr"
-        firstDay={1} // Monday
-        nowIndicator={true}
-        allDaySlot={false}
-        slotDuration="00:30:00"
-        snapDuration="00:15:00"
-        buttonText={{
-          today: "Aujourd'hui",
-          week: "Semaine",
-          day: "Jour",
-        }}
-        // Styling
-        eventClassNames="cursor-pointer hover:opacity-80 transition-opacity"
-        dayCellClassNames="hover:bg-christmas-cream/30 transition-colors"
-      />
+      <div className="flex-1 overflow-y-auto">
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView={isMobile ? "timeGridDay" : "timeGridWeek"}
+          headerToolbar={false}
+          datesSet={handleDatesSet}
+          events={calendarEvents}
+          eventClick={handleEventClick}
+          select={handleDateSelect}
+          selectable={true}
+          selectMirror={true}
+          dayMaxEvents={true}
+          weekends={true}
+          slotMinTime="06:00:00"
+          slotMaxTime="23:00:00"
+          height="auto"
+          locale="fr"
+          firstDay={1} // Monday
+          nowIndicator={true}
+          allDaySlot={false}
+          slotDuration="00:30:00"
+          snapDuration="00:15:00"
+          buttonText={{
+            today: "Aujourd'hui",
+            week: "Semaine",
+            day: "Jour",
+          }}
+          // Styling
+          eventClassNames="cursor-pointer hover:opacity-80 transition-opacity"
+          dayCellClassNames="hover:bg-christmas-cream/30 transition-colors"
+        />
+      </div>
 
       <style jsx global>{`
         /* FullCalendar custom styling */

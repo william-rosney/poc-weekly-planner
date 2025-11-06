@@ -63,13 +63,13 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 relative overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 relative">
       {/* Fond animé avec flocons de neige */}
       <SnowfallBackground />
 
       {/* Header avec design de Noël - animation d'entrée rapide */}
       <motion.header
-        className="bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-christmas-gold relative z-10"
+        className="shrink-0 bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-christmas-gold relative z-10"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -114,7 +114,7 @@ export default function CalendarPage() {
       </motion.header>
 
       {/* Contenu principal - animations optimisées */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      <main className="flex-1 overflow-y-auto max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,12 +131,14 @@ export default function CalendarPage() {
                 </div>
               )}
 
-              <Calendar
-                events={events}
-                loading={eventsLoading}
-                onEventClick={handleEventClick}
-                onDateSelect={handleDateSelect}
-              />
+              <div style={{ height: 'calc(100vh - 280px)' }}>
+                <Calendar
+                  events={events}
+                  loading={eventsLoading}
+                  onEventClick={handleEventClick}
+                  onDateSelect={handleDateSelect}
+                />
+              </div>
             </CardContent>
           </Card>
         </motion.div>
