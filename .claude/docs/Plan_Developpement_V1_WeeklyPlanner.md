@@ -75,13 +75,16 @@ Afficher une **vue calendrier** de la semaine et permettre la navigation entre s
 Un calendrier fonctionnel affichant les événements enregistrés dans la base.
 
 **Fichiers créés:**
+
 - [src/hooks/useEvents.ts](../../src/hooks/useEvents.ts) - Hook pour gérer les événements (CRUD)
 - [src/components/calendar/Calendar.tsx](../../src/components/calendar/Calendar.tsx) - Composant calendrier avec FullCalendar
 
 **Fichiers modifiés:**
+
 - [src/app/calendar/page.tsx](../../src/app/calendar/page.tsx) - Intégration du calendrier
 
 **Packages installés:**
+
 - `@fullcalendar/core`, `@fullcalendar/react`, `@fullcalendar/daygrid`, `@fullcalendar/timegrid`, `@fullcalendar/interaction`
 
 ---

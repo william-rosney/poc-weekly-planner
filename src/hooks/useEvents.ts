@@ -68,99 +68,103 @@ export function useEvents(): UseEventsReturn {
   /**
    * Create a new event
    */
-  const createEvent = useCallback(async (
-    event: Omit<Event, "id" | "created_at" | "updated_at">
-  ): Promise<{ success: boolean; error: string | null; data?: Event }> => {
+  const createEvent = useCallback(
+    async (
+      event: Omit<Event, "id" | "created_at" | "updated_at">
+    ): Promise<{ success: boolean; error: string | null; data?: Event }> => {
+      try {
+        const { data, error: insertError } = await supabase
+          .from("events")
+          .insert([event])
+          .select()
+          .single();
 
-    try {
-      const { data, error: insertError } = await supabase
-        .from("events")
-        .insert([event])
-        .select()
-        .single();
+        if (insertError) {
+          throw insertError;
+        }
 
-      if (insertError) {
-        throw insertError;
+        // Update local state
+        if (data) {
+          setEvents((prev) => [...prev, data]);
+        }
+
+        return { success: true, error: null, data: data || undefined };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error creating event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to create event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      if (data) {
-        setEvents((prev) => [...prev, data]);
-      }
-
-      return { success: true, error: null, data: data || undefined };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error creating event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to create event";
-      return { success: false, error: message };
-    }
-  }, [supabase]);
+    },
+    [supabase]
+  );
 
   /**
    * Update an existing event
    */
-  const updateEvent = useCallback(async (
-    id: string,
-    updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
-  ): Promise<{ success: boolean; error: string | null }> => {
+  const updateEvent = useCallback(
+    async (
+      id: string,
+      updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
+    ): Promise<{ success: boolean; error: string | null }> => {
+      try {
+        const { data, error: updateError } = await supabase
+          .from("events")
+          .update(updates)
+          .eq("id", id)
+          .select()
+          .single();
 
-    try {
-      const { data, error: updateError } = await supabase
-        .from("events")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
+        if (updateError) {
+          throw updateError;
+        }
 
-      if (updateError) {
-        throw updateError;
+        // Update local state
+        if (data) {
+          setEvents((prev) =>
+            prev.map((event) => (event.id === id ? data : event))
+          );
+        }
+
+        return { success: true, error: null };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error updating event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to update event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      if (data) {
-        setEvents((prev) =>
-          prev.map((event) => (event.id === id ? data : event))
-        );
-      }
-
-      return { success: true, error: null };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error updating event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to update event";
-      return { success: false, error: message };
-    }
-  }, [supabase]);
+    },
+    [supabase]
+  );
 
   /**
    * Delete an event
    */
-  const deleteEvent = useCallback(async (
-    id: string
-  ): Promise<{ success: boolean; error: string | null }> => {
+  const deleteEvent = useCallback(
+    async (id: string): Promise<{ success: boolean; error: string | null }> => {
+      try {
+        const { error: deleteError } = await supabase
+          .from("events")
+          .delete()
+          .eq("id", id);
 
-    try {
-      const { error: deleteError } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", id);
+        if (deleteError) {
+          throw deleteError;
+        }
 
-      if (deleteError) {
-        throw deleteError;
+        // Update local state
+        setEvents((prev) => prev.filter((event) => event.id !== id));
+
+        return { success: true, error: null };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error deleting event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to delete event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      setEvents((prev) => prev.filter((event) => event.id !== id));
-
-      return { success: true, error: null };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error deleting event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to delete event";
-      return { success: false, error: message };
-    }
-  }, [supabase]);
+    },
+    [supabase]
+  );
 
   /**
    * Refresh events manually

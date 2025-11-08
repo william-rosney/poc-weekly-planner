@@ -1,6 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 /**
  * Route Handler pour le callback d'authentification Magic Link
@@ -17,31 +17,41 @@ import type { NextRequest } from 'next/server';
  */
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-  const next = requestUrl.searchParams.get('next') ?? '/calendar';
+  const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") ?? "/calendar";
 
   // Vérifier si Supabase a retourné une erreur
-  const error = requestUrl.searchParams.get('error');
-  const errorDescription = requestUrl.searchParams.get('error_description');
+  const error = requestUrl.searchParams.get("error");
+  const errorDescription = requestUrl.searchParams.get("error_description");
 
   if (error) {
-    console.error('[AuthCallback] Supabase error:', { error, errorDescription });
-    return NextResponse.redirect(new URL('/login?error=auth_error', request.url));
+    console.error("[AuthCallback] Supabase error:", {
+      error,
+      errorDescription,
+    });
+    return NextResponse.redirect(
+      new URL("/login?error=auth_error", request.url)
+    );
   }
 
   if (code) {
     const supabase = await createClient();
 
     // Échanger le code pour une session
-    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    const { error: exchangeError } =
+      await supabase.auth.exchangeCodeForSession(code);
 
     if (exchangeError) {
-      console.error('[AuthCallback] Error exchanging code:', exchangeError);
-      return NextResponse.redirect(new URL('/login?error=exchange_error', request.url));
+      console.error("[AuthCallback] Error exchanging code:", exchangeError);
+      return NextResponse.redirect(
+        new URL("/login?error=exchange_error", request.url)
+      );
     }
   }
 
   // Rediriger vers page de vérification qui affichera le spinner
   // Cette page vérifie la session et redirige ensuite vers la destination finale
-  return NextResponse.redirect(new URL(`/auth/verifying?next=${encodeURIComponent(next)}`, request.url));
+  return NextResponse.redirect(
+    new URL(`/auth/verifying?next=${encodeURIComponent(next)}`, request.url)
+  );
 }

@@ -149,7 +149,10 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
     });
 
     if (!success) {
-      console.error("[CalendarClient] Error updating event via drag:", updateError);
+      console.error(
+        "[CalendarClient] Error updating event via drag:",
+        updateError
+      );
       throw new Error(updateError || "Erreur lors de la mise à jour");
     }
   };
@@ -223,7 +226,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
                 </div>
               )}
 
-              <div style={{ height: 'calc(100vh - 280px)' }}>
+              <div style={{ height: "calc(100vh - 280px)" }}>
                 <Calendar
                   events={events}
                   loading={eventsLoading}

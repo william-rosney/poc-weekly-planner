@@ -1,38 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 /**
- * Page de vérification de session après authentification - Client Component
- *
- * Cette page affiche un spinner pendant que la session est vérifiée
- * puis redirige automatiquement vers la destination
- *
- * Le Route Handler a déjà échangé le code pour une session,
- * cette page attend juste un peu pour donner un feedback visuel
- * puis redirige l'utilisateur
+ * Composant de spinner de vérification
  */
-export default function VerifyingPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    // Attendre 1 seconde pour donner un feedback visuel
-    // puis rediriger vers la destination
-    const next = searchParams.get('next') ?? '/calendar';
-
-    const timer = setTimeout(() => {
-      router.push(next);
-      router.refresh(); // Force Server Component refresh
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [router, searchParams]);
-
+function VerifyingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
       <motion.div
         className="text-center p-8 bg-white rounded-lg shadow-xl"
         initial={{ opacity: 0, y: 20 }}
@@ -76,5 +53,47 @@ export default function VerifyingPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * Composant interne qui gère la redirection avec useSearchParams
+ * Doit être enveloppé dans Suspense
+ */
+function VerifyingContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Attendre 1 seconde pour donner un feedback visuel
+    // puis rediriger vers la destination
+    const next = searchParams.get("next") ?? "/calendar";
+
+    const timer = setTimeout(() => {
+      router.push(next);
+      router.refresh(); // Force Server Component refresh
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [router, searchParams]);
+
+  return <VerifyingSpinner />;
+}
+
+/**
+ * Page de vérification de session après authentification - Client Component
+ *
+ * Cette page affiche un spinner pendant que la session est vérifiée
+ * puis redirige automatiquement vers la destination
+ *
+ * Le Route Handler a déjà échangé le code pour une session,
+ * cette page attend juste un peu pour donner un feedback visuel
+ * puis redirige l'utilisateur
+ */
+export default function VerifyingPage() {
+  return (
+    <Suspense fallback={<VerifyingSpinner />}>
+      <VerifyingContent />
+    </Suspense>
   );
 }

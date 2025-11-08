@@ -1,6 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import CalendarClient from './CalendarClient';
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import CalendarClient from "./CalendarClient";
 
 /**
  * Page du calendrier - Server Component
@@ -17,22 +17,25 @@ export default async function CalendarPage() {
 
   // Validation côté serveur avec getUser() (recommandé par Supabase)
   // getUser() valide le token JWT côté serveur, contrairement à getSession()
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect('/login');
+    redirect("/login");
   }
 
   // Récupérer les données de l'utilisateur depuis la table users
   const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', user.email)
+    .from("users")
+    .select("*")
+    .eq("email", user.email)
     .single();
 
   if (userError || !userData) {
-    console.error('[CalendarPage] Error fetching user data:', userError);
-    redirect('/login');
+    console.error("[CalendarPage] Error fetching user data:", userError);
+    redirect("/login");
   }
 
   // Rendre le Client Component avec les données validées

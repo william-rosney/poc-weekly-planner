@@ -7,11 +7,13 @@ Authentication sessions were not persisting after page reload due to cookie sync
 ## Solution Architecture
 
 ### Server Components for Auth Validation
+
 - **Home page** (`app/page.tsx`): Server Component that validates session with `getUser()` and redirects
 - **Calendar page** (`app/calendar/page.tsx`): Server Component that validates user and fetches data server-side
 - **Auth callback** (`app/auth/callback/route.ts`): Route Handler (not Server Component) for reliable cookie writing
 
 ### Client Components for Interactivity
+
 - **CalendarClient** (`app/calendar/CalendarClient.tsx`): Receives validated user data as props, handles all UI interactions
 - **Login page** (`app/(auth)/login/page.tsx`): Creates own Supabase client for sending magic links
 
@@ -25,16 +27,19 @@ Authentication sessions were not persisting after page reload due to cookie sync
 ## Files Changed
 
 **Removed:**
+
 - `src/providers/AuthProvider.tsx` (replaced by Server Component pattern)
 - `src/hooks/useAuth.ts` (no longer needed)
 - `src/app/auth/callback/page.tsx` (replaced by Route Handler)
 
 **Created:**
+
 - `src/app/auth/callback/route.ts` (Route Handler for cookie management)
 - `src/app/auth/verifying/page.tsx` (Loading state with spinner)
 - `src/app/calendar/CalendarClient.tsx` (Interactive UI component)
 
 **Modified:**
+
 - `src/app/calendar/page.tsx` (converted to Server Component)
 - `src/app/page.tsx` (converted to Server Component)
 - `src/app/(auth)/login/page.tsx` (removed AuthProvider dependency)
