@@ -1,35 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { UserSelector } from "./components/UserSelector";
 import { MagicLinkForm } from "./components/MagicLinkForm";
-import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SnowfallBackground } from "@/components/christmas/SnowfallBackground";
 import { ArrowLeft } from "lucide-react";
 
 /**
- * Page de connexion avec sélection d'utilisateur et Magic Link
+ * Page de connexion avec sélection d'utilisateur et Magic Link - Client Component
+ *
+ * Pattern Supabase 2025:
+ * - Crée son propre client Supabase pour l'authentification
+ * - Pas de dépendance sur AuthProvider
+ * - La validation de session est gérée par les Server Components
  */
 export default function LoginPage() {
-  const router = useRouter();
-  const {
-    isAuthenticated,
-    loading: authLoading,
-    signInWithMagicLink,
-  } = useAuth();
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [selectedUserName, setSelectedUserName] = useState<string>("");
 
-  // Rediriger si déjà authentifié
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.push("/calendar");
+  /**
+   * Envoie un Magic Link à l'email spécifié
+   */
+  const signInWithMagicLink = useCallback(async (email: string) => {
+    try {
+      const supabase = createClient();
+
+      // Use localhost:3000 explicitly for local dev to match Supabase config
+      const redirectUrl =
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3000/auth/callback"
+          : `${window.location.origin}/auth/callback`;
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectUrl,
+          shouldCreateUser: true,
+        },
+      });
+
+      if (error) throw error;
+      return { success: true, error: null };
+    } catch (error: unknown) {
+      console.error("[LoginPage] Error sending Magic Link:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return { success: false, error: message };
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, []);
 
   const handleSelectUser = (email: string, userName: string) => {
     setSelectedEmail(email);
@@ -40,27 +61,6 @@ export default function LoginPage() {
     setSelectedEmail(null);
     setSelectedUserName("");
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 relative overflow-hidden">
-        {/* Fond animé avec flocons de neige */}
-        <SnowfallBackground />
-
-        <motion.div
-          className="text-center relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-christmas-red border-r-transparent"></div>
-          <p className="mt-4 text-sm text-gray-700 font-medium">
-            Chargement...
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 p-4 relative overflow-hidden">

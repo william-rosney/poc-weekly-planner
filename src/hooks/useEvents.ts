@@ -24,8 +24,15 @@ interface UseEventsReturn {
 /**
  * Hook to manage calendar events
  * Provides CRUD operations and real-time synchronization
+ *
+ * Pattern Supabase 2025:
+ * - Crée son propre client Supabase (singleton interne)
+ * - Pas de dépendance sur AuthProvider/Context
+ * - L'authentification est gérée par les Server Components
  */
 export function useEvents(): UseEventsReturn {
+  // Créer une instance du client Supabase (singleton interne)
+  const supabase = createClient();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +41,6 @@ export function useEvents(): UseEventsReturn {
    * Fetch all events from Supabase
    */
   const fetchEvents = useCallback(async () => {
-    const supabase = createClient();
     setLoading(true);
     setError(null);
 
@@ -57,15 +63,14 @@ export function useEvents(): UseEventsReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [supabase]);
 
   /**
    * Create a new event
    */
-  const createEvent = async (
+  const createEvent = useCallback(async (
     event: Omit<Event, "id" | "created_at" | "updated_at">
   ): Promise<{ success: boolean; error: string | null; data?: Event }> => {
-    const supabase = createClient();
 
     try {
       const { data, error: insertError } = await supabase
@@ -90,16 +95,15 @@ export function useEvents(): UseEventsReturn {
         err instanceof Error ? err.message : "Failed to create event";
       return { success: false, error: message };
     }
-  };
+  }, [supabase]);
 
   /**
    * Update an existing event
    */
-  const updateEvent = async (
+  const updateEvent = useCallback(async (
     id: string,
     updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
   ): Promise<{ success: boolean; error: string | null }> => {
-    const supabase = createClient();
 
     try {
       const { data, error: updateError } = await supabase
@@ -127,15 +131,14 @@ export function useEvents(): UseEventsReturn {
         err instanceof Error ? err.message : "Failed to update event";
       return { success: false, error: message };
     }
-  };
+  }, [supabase]);
 
   /**
    * Delete an event
    */
-  const deleteEvent = async (
+  const deleteEvent = useCallback(async (
     id: string
   ): Promise<{ success: boolean; error: string | null }> => {
-    const supabase = createClient();
 
     try {
       const { error: deleteError } = await supabase
@@ -157,7 +160,7 @@ export function useEvents(): UseEventsReturn {
         err instanceof Error ? err.message : "Failed to delete event";
       return { success: false, error: message };
     }
-  };
+  }, [supabase]);
 
   /**
    * Refresh events manually
