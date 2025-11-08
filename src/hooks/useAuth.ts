@@ -30,7 +30,9 @@ export function useAuth() {
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
         if (!session) {
           setState({
@@ -109,7 +111,10 @@ export function useAuth() {
             if (!updateError) {
               userData.auth_id = session.user.id;
             } else {
-              console.error("[useAuth] Error updating auth_id in state change listener:", updateError);
+              console.error(
+                "[useAuth] Error updating auth_id in state change listener:",
+                updateError
+              );
             }
           }
 
