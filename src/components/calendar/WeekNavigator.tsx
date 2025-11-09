@@ -78,7 +78,7 @@ export function WeekNavigator({
     }
   };
 
-  // Reusable calendar picker component
+  // Reusable calendar picker component with Christmas theme
   const calendarPickerElement = (
     <CalendarPicker
       mode="single"
@@ -89,6 +89,7 @@ export function WeekNavigator({
       captionLayout="dropdown-months"
       fromYear={2020}
       toYear={2030}
+      className="rounded-lg"
     />
   );
 
