@@ -7,8 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Event } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { WeekNavigator } from "@/components/calendar/WeekNavigator";
 
 interface CalendarProps {
   events: Event[];
@@ -53,27 +52,10 @@ export function Calendar({
     }
   }, [isMobile]);
 
-  // Navigation handlers
-  const handlePrev = () => {
+  // Update title when navigation occurs
+  const handleNavigate = () => {
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
-      calendarApi.prev();
-      setCurrentTitle(calendarApi.view.title);
-    }
-  };
-
-  const handleNext = () => {
-    const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      calendarApi.next();
-      setCurrentTitle(calendarApi.view.title);
-    }
-  };
-
-  const handleToday = () => {
-    const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      calendarApi.today();
       setCurrentTitle(calendarApi.view.title);
     }
   };
@@ -185,42 +167,13 @@ export function Calendar({
         </div>
       )}
 
-      {/* Custom navigation for both desktop and mobile */}
-      <div className="flex items-center justify-center gap-4 mb-4 shrink-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handlePrev}
-          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
-        >
-          <ChevronLeft className="h-4 w-4 text-christmas-red" />
-        </Button>
-
-        <div className="flex items-center gap-3">
-          <h2 className="text-sm font-semibold text-gray-700">
-            {currentTitle}
-          </h2>
-          {!isMobile && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleToday}
-              className="h-7 px-3 text-xs border-christmas-red/30 text-christmas-red hover:bg-christmas-cream/50"
-            >
-              Aujourd&apos;hui
-            </Button>
-          )}
-        </div>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleNext}
-          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
-        >
-          <ChevronRight className="h-4 w-4 text-christmas-red" />
-        </Button>
-      </div>
+      {/* Week/Day navigation with date picker */}
+      <WeekNavigator
+        calendarRef={calendarRef}
+        currentTitle={currentTitle}
+        isMobile={isMobile}
+        onNavigate={handleNavigate}
+      />
 
       <div className="flex-1 overflow-y-auto">
         <FullCalendar
