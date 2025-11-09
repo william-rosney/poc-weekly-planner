@@ -64,13 +64,6 @@ export async function GET(request: NextRequest) {
   // Get the proper base URL for redirects
   const baseUrl = getBaseUrl(request);
 
-  console.log("[AuthCallback] Received params:", {
-    token_hash: token_hash ? "present" : "missing",
-    type,
-    code: code ? "present" : "missing",
-    baseUrl,
-  });
-
   // Vérifier si Supabase a retourné une erreur
   const error = requestUrl.searchParams.get("error");
   const errorDescription = requestUrl.searchParams.get("error_description");
@@ -96,8 +89,6 @@ export async function GET(request: NextRequest) {
         new URL("/login?error=exchange_error", baseUrl)
       );
     }
-
-    console.log("[AuthCallback] Successfully exchanged code for session");
   }
   // Handle Magic Link flow (old format with token_hash parameter)
   else if (token_hash && type) {
@@ -112,8 +103,6 @@ export async function GET(request: NextRequest) {
         new URL("/login?error=verify_error", baseUrl)
       );
     }
-
-    console.log("[AuthCallback] Successfully verified magic link");
   }
   // No valid auth parameters found
   else {
