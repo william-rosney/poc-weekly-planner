@@ -38,9 +38,15 @@ function getBaseUrl(request: NextRequest): string {
 /**
  * Route Handler pour le callback d'authentification Magic Link
  *
+ * Supporte deux formats d'authentification:
+ * 1. PKCE flow (nouveau): ?code=xxx
+ *    - Utilise exchangeCodeForSession()
+ * 2. Magic Link flow (ancien): ?token_hash=xxx&type=magiclink
+ *    - Utilise verifyOtp()
+ *
  * Pattern Supabase 2025 (recommandé):
  * - Utilise un Route Handler (pas Server Component) pour gérer les cookies correctement
- * - Échange le code pour une session
+ * - Échange le code/token pour une session
  * - Les cookies sont correctement propagés au navigateur
  * - Redirige vers la destination
  *
@@ -50,11 +56,20 @@ function getBaseUrl(request: NextRequest): string {
  */
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
+  const token_hash = requestUrl.searchParams.get("token_hash");
+  const type = requestUrl.searchParams.get("type");
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") ?? "/calendar";
 
   // Get the proper base URL for redirects
   const baseUrl = getBaseUrl(request);
+
+  console.log("[AuthCallback] Received params:", {
+    token_hash: token_hash ? "present" : "missing",
+    type,
+    code: code ? "present" : "missing",
+    baseUrl,
+  });
 
   // Vérifier si Supabase a retourné une erreur
   const error = requestUrl.searchParams.get("error");
@@ -68,10 +83,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=auth_error", baseUrl));
   }
 
-  if (code) {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    // Échanger le code pour une session
+  // Handle PKCE flow (new format with code parameter)
+  if (code) {
     const { error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
 
@@ -81,6 +96,31 @@ export async function GET(request: NextRequest) {
         new URL("/login?error=exchange_error", baseUrl)
       );
     }
+
+    console.log("[AuthCallback] Successfully exchanged code for session");
+  }
+  // Handle Magic Link flow (old format with token_hash parameter)
+  else if (token_hash && type) {
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash,
+      type: type as "magiclink" | "email",
+    });
+
+    if (verifyError) {
+      console.error("[AuthCallback] Error verifying OTP:", verifyError);
+      return NextResponse.redirect(
+        new URL("/login?error=verify_error", baseUrl)
+      );
+    }
+
+    console.log("[AuthCallback] Successfully verified magic link");
+  }
+  // No valid auth parameters found
+  else {
+    console.error("[AuthCallback] No valid auth parameters found");
+    return NextResponse.redirect(
+      new URL("/login?error=missing_params", baseUrl)
+    );
   }
 
   // Rediriger vers page de vérification qui affichera le spinner
