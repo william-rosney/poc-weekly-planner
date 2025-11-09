@@ -55,11 +55,16 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect to login if user is not authenticated and trying to access protected routes
-  // Allow access to /auth/* routes (login, callback, etc.) and root
+  // Allow access to:
+  // - /auth/* routes (login, callback, verifying, etc.)
+  // - /login route
+  // - /api/* routes (API routes handle their own auth)
+  // - / (root)
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/api") &&
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();
