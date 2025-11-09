@@ -1,32 +1,26 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 /**
- * Page d'accueil - Redirige vers login ou calendar selon l'état d'authentification
+ * Page d'accueil - Server Component
+ * Redirige vers login ou calendar selon l'état d'authentification
+ *
+ * Pattern Supabase 2025:
+ * - Server-side validation avec getUser()
+ * - Redirection côté serveur (pas de flash de contenu)
+ * - Pas de loading state nécessaire
  */
-export default function Home() {
-  const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    if (!loading) {
-      if (isAuthenticated) {
-        router.push("/calendar");
-      } else {
-        router.push("/login");
-      }
-    }
-  }, [isAuthenticated, loading, router]);
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-        <p className="mt-4 text-sm text-muted-foreground">Chargement...</p>
-      </div>
-    </main>
-  );
+  if (user) {
+    // Utilisateur authentifié → calendrier
+    redirect("/calendar");
+  } else {
+    // Utilisateur non authentifié → page de login
+    redirect("/login");
+  }
 }

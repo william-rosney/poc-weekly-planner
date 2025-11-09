@@ -13,11 +13,7 @@ export const eventFormSchema = z
       required_error: "La date de fin est requise",
     }),
     description: z.string().optional(),
-    link: z
-      .string()
-      .url("L'URL doit être valide")
-      .optional()
-      .or(z.literal("")),
+    link: z.string().url("L'URL doit être valide").optional().or(z.literal("")),
     cost_per_person: z
       .number()
       .positive("Le coût doit être positif")

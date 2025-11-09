@@ -24,8 +24,15 @@ interface UseEventsReturn {
 /**
  * Hook to manage calendar events
  * Provides CRUD operations and real-time synchronization
+ *
+ * Pattern Supabase 2025:
+ * - Crée son propre client Supabase (singleton interne)
+ * - Pas de dépendance sur AuthProvider/Context
+ * - L'authentification est gérée par les Server Components
  */
 export function useEvents(): UseEventsReturn {
+  // Créer une instance du client Supabase (singleton interne)
+  const supabase = createClient();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +41,6 @@ export function useEvents(): UseEventsReturn {
    * Fetch all events from Supabase
    */
   const fetchEvents = useCallback(async () => {
-    const supabase = createClient();
     setLoading(true);
     setError(null);
 
@@ -57,107 +63,108 @@ export function useEvents(): UseEventsReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [supabase]);
 
   /**
    * Create a new event
    */
-  const createEvent = async (
-    event: Omit<Event, "id" | "created_at" | "updated_at">
-  ): Promise<{ success: boolean; error: string | null; data?: Event }> => {
-    const supabase = createClient();
+  const createEvent = useCallback(
+    async (
+      event: Omit<Event, "id" | "created_at" | "updated_at">
+    ): Promise<{ success: boolean; error: string | null; data?: Event }> => {
+      try {
+        const { data, error: insertError } = await supabase
+          .from("events")
+          .insert([event])
+          .select()
+          .single();
 
-    try {
-      const { data, error: insertError } = await supabase
-        .from("events")
-        .insert([event])
-        .select()
-        .single();
+        if (insertError) {
+          throw insertError;
+        }
 
-      if (insertError) {
-        throw insertError;
+        // Update local state
+        if (data) {
+          setEvents((prev) => [...prev, data]);
+        }
+
+        return { success: true, error: null, data: data || undefined };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error creating event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to create event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      if (data) {
-        setEvents((prev) => [...prev, data]);
-      }
-
-      return { success: true, error: null, data: data || undefined };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error creating event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to create event";
-      return { success: false, error: message };
-    }
-  };
+    },
+    [supabase]
+  );
 
   /**
    * Update an existing event
    */
-  const updateEvent = async (
-    id: string,
-    updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
-  ): Promise<{ success: boolean; error: string | null }> => {
-    const supabase = createClient();
+  const updateEvent = useCallback(
+    async (
+      id: string,
+      updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
+    ): Promise<{ success: boolean; error: string | null }> => {
+      try {
+        const { data, error: updateError } = await supabase
+          .from("events")
+          .update(updates)
+          .eq("id", id)
+          .select()
+          .single();
 
-    try {
-      const { data, error: updateError } = await supabase
-        .from("events")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
+        if (updateError) {
+          throw updateError;
+        }
 
-      if (updateError) {
-        throw updateError;
+        // Update local state
+        if (data) {
+          setEvents((prev) =>
+            prev.map((event) => (event.id === id ? data : event))
+          );
+        }
+
+        return { success: true, error: null };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error updating event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to update event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      if (data) {
-        setEvents((prev) =>
-          prev.map((event) => (event.id === id ? data : event))
-        );
-      }
-
-      return { success: true, error: null };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error updating event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to update event";
-      return { success: false, error: message };
-    }
-  };
+    },
+    [supabase]
+  );
 
   /**
    * Delete an event
    */
-  const deleteEvent = async (
-    id: string
-  ): Promise<{ success: boolean; error: string | null }> => {
-    const supabase = createClient();
+  const deleteEvent = useCallback(
+    async (id: string): Promise<{ success: boolean; error: string | null }> => {
+      try {
+        const { error: deleteError } = await supabase
+          .from("events")
+          .delete()
+          .eq("id", id);
 
-    try {
-      const { error: deleteError } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", id);
+        if (deleteError) {
+          throw deleteError;
+        }
 
-      if (deleteError) {
-        throw deleteError;
+        // Update local state
+        setEvents((prev) => prev.filter((event) => event.id !== id));
+
+        return { success: true, error: null };
+      } catch (err: unknown) {
+        console.error("[useEvents] Error deleting event:", err);
+        const message =
+          err instanceof Error ? err.message : "Failed to delete event";
+        return { success: false, error: message };
       }
-
-      // Update local state
-      setEvents((prev) => prev.filter((event) => event.id !== id));
-
-      return { success: true, error: null };
-    } catch (err: unknown) {
-      console.error("[useEvents] Error deleting event:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to delete event";
-      return { success: false, error: message };
-    }
-  };
+    },
+    [supabase]
+  );
 
   /**
    * Refresh events manually

@@ -129,7 +129,9 @@ export function EventFormDrawer({
                 <div className="flex items-center justify-between">
                   <div>
                     <SheetTitle className="text-xl font-bold text-christmas-red">
-                      {isExistingEvent ? "Modifier l'événement" : "Nouvel événement"}
+                      {isExistingEvent
+                        ? "Modifier l'événement"
+                        : "Nouvel événement"}
                     </SheetTitle>
                     <SheetDescription>
                       {isExistingEvent

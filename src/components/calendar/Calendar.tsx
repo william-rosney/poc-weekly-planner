@@ -148,7 +148,10 @@ export function Calendar({
   };
 
   // Handle event resize
-  const handleEventResize = async (resizeInfo: { event: { id: string; start: Date | null; end: Date | null }; revert: () => void }) => {
+  const handleEventResize = async (resizeInfo: {
+    event: { id: string; start: Date | null; end: Date | null };
+    revert: () => void;
+  }) => {
     if (!onEventUpdate) {
       // Revert if no update handler
       resizeInfo.revert();
@@ -373,7 +376,9 @@ export function Calendar({
 
         .fc-event:hover {
           transform: scale(1.02);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          box-shadow:
+            0 4px 6px -1px rgb(0 0 0 / 0.1),
+            0 2px 4px -2px rgb(0 0 0 / 0.1);
           transition: all 0.2s ease;
         }
 

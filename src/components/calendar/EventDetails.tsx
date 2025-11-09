@@ -2,7 +2,14 @@
 
 import { Event } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, DollarSign, ExternalLink, Edit, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -79,7 +86,11 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
               </span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-500">
-                {((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60)).toFixed(1)}h
+                {(
+                  (endDate.getTime() - startDate.getTime()) /
+                  (1000 * 60 * 60)
+                ).toFixed(1)}
+                h
               </span>
             </div>
           </div>

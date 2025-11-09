@@ -81,10 +81,7 @@ export function EventForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {/* Titre */}
         <FormField
           control={form.control}
@@ -166,11 +163,7 @@ export function EventForm({
                 <FormControl>
                   <Input
                     type="time"
-                    value={
-                      field.value
-                        ? format(field.value, "HH:mm")
-                        : ""
-                    }
+                    value={field.value ? format(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
                       const newDate = new Date(field.value);
@@ -249,11 +242,7 @@ export function EventForm({
                 <FormControl>
                   <Input
                     type="time"
-                    value={
-                      field.value
-                        ? format(field.value, "HH:mm")
-                        : ""
-                    }
+                    value={field.value ? format(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
                       const newDate = new Date(field.value);
