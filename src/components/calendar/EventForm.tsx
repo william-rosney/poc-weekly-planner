@@ -382,7 +382,7 @@ export function EventForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-christmas-red hover:bg-christmas-red-dark text-white"
+            className="flex-1"
           >
             {isLoading ? "Enregistrement..." : submitLabel}
           </Button>

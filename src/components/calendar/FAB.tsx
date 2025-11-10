@@ -25,7 +25,7 @@ export function FAB({ onClick }: FABProps) {
       <Button
         onClick={onClick}
         size="lg"
-        className="h-14 w-14 rounded-full shadow-lg bg-christmas-red hover:bg-christmas-red-dark text-white transition-all duration-200 group"
+        className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary text-white transition-all duration-200 group"
       >
         <motion.div
           animate={{ rotate: 0 }}

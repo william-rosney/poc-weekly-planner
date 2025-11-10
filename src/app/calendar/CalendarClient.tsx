@@ -158,13 +158,13 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 relative">
+    <div className="h-screen flex flex-col overflow-hidden bg-linear-to-br from-background via-primary/10 to-chart-2/10 relative">
       {/* Fond animé avec flocons de neige */}
       <SnowfallBackground />
 
       {/* Header avec design de Noël - animation d'entrée rapide */}
       <motion.header
-        className="shrink-0 bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-christmas-gold relative z-10"
+        className="shrink-0 bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-secondary relative z-10"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -186,7 +186,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
             >
               🎄
             </motion.span>
-            <h1 className="text-2xl font-bold bg-linear-to-r from-christmas-red to-christmas-green bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-chart-2 bg-clip-text text-transparent">
               Mon Agenda Familial
             </h1>
           </div>
@@ -195,12 +195,12 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-700 font-medium">
               🎅 Bonjour,{" "}
-              <strong className="text-christmas-red">{initialUser.name}</strong>
+              <strong className="text-primary">{initialUser.name}</strong>
             </span>
             <Button
               variant="outline"
               onClick={handleSignOut}
-              className="border-2 border-christmas-red text-christmas-red hover:bg-christmas-red hover:text-white transition-all duration-200 font-semibold"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
             >
               Déconnexion
             </Button>
@@ -215,7 +215,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.3, ease: "easeOut" }}
         >
-          <Card className="border-2 border-christmas-gold/40 shadow-2xl backdrop-blur-sm bg-white/95">
+          <Card className="border-2 border-secondary/40 shadow-2xl backdrop-blur-sm bg-white/95">
             <CardContent className="p-4">
               {error && (
                 <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">

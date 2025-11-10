@@ -55,9 +55,9 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
             variant="ghost"
             size="icon"
             onClick={onEdit}
-            className="h-9 w-9 hover:bg-christmas-cream/50"
+            className="h-9 w-9 hover:bg-background/50"
           >
-            <Edit className="h-4 w-4 text-christmas-red" />
+            <Edit className="h-4 w-4 text-primary" />
           </Button>
           <Button
             variant="ghost"
@@ -73,8 +73,8 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
       {/* Détails de l'événement */}
       <div className="space-y-4">
         {/* Date et heure */}
-        <div className="flex items-start gap-3 p-4 bg-christmas-cream/30 rounded-lg">
-          <Calendar className="h-5 w-5 text-christmas-red mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 p-4 bg-background/30 rounded-lg">
+          <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
           <div className="flex-1">
             <div className="font-semibold text-gray-900 mb-1">
               {formatDate(startDate)}

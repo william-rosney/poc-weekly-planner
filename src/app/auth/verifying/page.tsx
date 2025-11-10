@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
  */
 function VerifyingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background via-primary/10 to-chart-2/10">
       <motion.div
         className="text-center p-8 bg-white rounded-lg shadow-xl"
         initial={{ opacity: 0, y: 20 }}
@@ -18,12 +18,12 @@ function VerifyingSpinner() {
       >
         {/* Spinner de chargement avec animation */}
         <motion.div
-          className="inline-block h-16 w-16 rounded-full border-4 border-solid border-christmas-red border-r-transparent mb-6"
+          className="inline-block h-16 w-16 rounded-full border-4 border-solid border-primary border-r-transparent mb-6"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
 
-        <h1 className="text-2xl font-bold text-christmas-green mb-2">
+        <h1 className="text-2xl font-bold text-chart-2 mb-2">
           Connexion en cours...
         </h1>
         <p className="text-gray-600">Vérification de votre identité</p>
@@ -38,7 +38,7 @@ function VerifyingSpinner() {
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 bg-christmas-gold rounded-full"
+              className="w-2 h-2 bg-secondary rounded-full"
               animate={{
                 scale: [1, 1.5, 1],
                 opacity: [0.5, 1, 0.5],
