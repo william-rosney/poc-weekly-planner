@@ -37,9 +37,9 @@ export type EventFormValues = z.infer<typeof eventFormSchema>;
  * Palette de couleurs prédéfinies pour les événements
  */
 export const EVENT_COLORS = [
-  { label: "Rouge Noël", value: "#C8102E" },
-  { label: "Vert Noël", value: "#165B33" },
-  { label: "Or Noël", value: "#D4AF37" },
+  { label: "Rouge", value: "#C8102E" },
+  { label: "Vert", value: "#165B33" },
+  { label: "Or", value: "#D4AF37" },
   { label: "Bleu", value: "#3B82F6" },
   { label: "Violet", value: "#8B5CF6" },
   { label: "Rose", value: "#EC4899" },
@@ -50,4 +50,4 @@ export const EVENT_COLORS = [
 /**
  * Couleur par défaut pour les nouveaux événements
  */
-export const DEFAULT_EVENT_COLOR = "#C8102E"; // christmas-red
+export const DEFAULT_EVENT_COLOR = "#C8102E";

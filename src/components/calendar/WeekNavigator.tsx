@@ -95,11 +95,11 @@ export function WeekNavigator({
   // Title button with click handler and visual indicator
   const titleButton = (
     <button
-      className="group flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-christmas-cream/50 transition-colors"
+      className="group flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
       aria-label="Sélectionner une date"
     >
       <h2 className="text-sm font-semibold text-gray-700">{currentTitle}</h2>
-      <CalendarIcon className="h-3.5 w-3.5 text-christmas-gold opacity-0 group-hover:opacity-100 transition-opacity" />
+      <CalendarIcon className="h-3.5 w-3.5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
     </button>
   );
 
@@ -111,10 +111,10 @@ export function WeekNavigator({
           variant="ghost"
           size="sm"
           onClick={handlePrev}
-          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
+          className="h-8 w-8 p-0 hover:bg-background/50"
           aria-label="Semaine précédente"
         >
-          <ChevronLeft className="h-4 w-4 text-christmas-red" />
+          <ChevronLeft className="h-4 w-4 text-primary" />
         </Button>
 
         {/* Center: Title + Date Picker + Today button */}
@@ -134,7 +134,7 @@ export function WeekNavigator({
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>{titleButton}</PopoverTrigger>
               <PopoverContent
-                className="w-auto p-0 border-2 border-christmas-gold shadow-lg"
+                className="w-auto p-0 border-2 border-secondary shadow-lg"
                 align="center"
               >
                 {calendarPickerElement}
@@ -148,7 +148,7 @@ export function WeekNavigator({
               variant="outline"
               size="sm"
               onClick={handleToday}
-              className="h-7 px-3 text-xs border-christmas-red/30 text-christmas-red hover:bg-christmas-cream/50"
+              className="h-7 px-3 text-xs border-primary/30 text-primary hover:bg-background/50"
             >
               Aujourd&apos;hui
             </Button>
@@ -160,10 +160,10 @@ export function WeekNavigator({
           variant="ghost"
           size="sm"
           onClick={handleNext}
-          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
+          className="h-8 w-8 p-0 hover:bg-background/50"
           aria-label="Semaine suivante"
         >
-          <ChevronRight className="h-4 w-4 text-christmas-red" />
+          <ChevronRight className="h-4 w-4 text-primary" />
         </Button>
       </div>
     </>

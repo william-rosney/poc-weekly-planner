@@ -109,7 +109,7 @@ export function EventFormDrawer({
             // Mode vue: afficher les détails de l'événement
             <>
               <SheetHeader>
-                <SheetTitle className="text-xl font-bold text-christmas-red">
+                <SheetTitle className="text-xl font-bold text-primary">
                   Détails de l&apos;événement
                 </SheetTitle>
               </SheetHeader>
@@ -128,7 +128,7 @@ export function EventFormDrawer({
               <SheetHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <SheetTitle className="text-xl font-bold text-christmas-red">
+                    <SheetTitle className="text-xl font-bold text-primary">
                       {isExistingEvent
                         ? "Modifier l'événement"
                         : "Nouvel événement"}

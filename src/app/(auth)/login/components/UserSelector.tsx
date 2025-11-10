@@ -67,7 +67,7 @@ export function UserSelector({
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="inline-block h-8 w-8 rounded-full border-4 border-solid border-christmas-red border-r-transparent"
+          className="inline-block h-8 w-8 rounded-full border-4 border-solid border-primary border-r-transparent"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
@@ -83,7 +83,7 @@ export function UserSelector({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
       >
-        <p className="text-sm text-christmas-red">{error}</p>
+        <p className="text-sm text-primary">{error}</p>
       </motion.div>
     );
   }
@@ -107,7 +107,7 @@ export function UserSelector({
     <div className="space-y-3">
       {/* Titre avec animation optimisée - durée réduite pour fluidité */}
       <motion.h2
-        className="text-lg font-semibold text-center mb-4 text-christmas-red"
+        className="text-lg font-semibold text-center mb-4 text-primary"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -133,15 +133,15 @@ export function UserSelector({
               <Card
                 className={`cursor-pointer transition-shadow duration-150 ease-out hover:shadow-xl ${
                   selectedEmail === user.email
-                    ? "ring-2 ring-christmas-green bg-christmas-green/5 border-christmas-green shadow-lg"
-                    : "border-christmas-gold/30 hover:border-christmas-gold"
+                    ? "ring-2 ring-chart-2 bg-chart-2/5 border-chart-2 shadow-lg"
+                    : "border-secondary/30 hover:border-secondary"
                 }`}
                 onClick={() => onSelectUser(user.email, user.name)}
               >
                 <CardContent className="flex items-center gap-4 p-4">
                   {/* Avatar avec bordure festive */}
-                  <Avatar className="h-14 w-14 border-2 border-christmas-gold shadow-md">
-                    <AvatarFallback className="bg-gradient-to-br from-christmas-red/20 to-christmas-green/20 text-christmas-red font-bold text-lg">
+                  <Avatar className="h-14 w-14 border-2 border-secondary shadow-md">
+                    <AvatarFallback className="bg-linear-to-br from-primary/20 to-chart-2/20 text-primary font-bold text-lg">
                       {getInitials(user.name)}
                     </AvatarFallback>
                   </Avatar>

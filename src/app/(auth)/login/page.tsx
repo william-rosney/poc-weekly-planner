@@ -63,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-christmas-cream via-christmas-red/10 to-christmas-green/10 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-chart-2/10 p-4 relative overflow-hidden">
       {/* Fond animé avec flocons de neige */}
       <SnowfallBackground />
 
@@ -91,7 +91,7 @@ export default function LoginPage() {
             🎄
           </motion.div>
 
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-christmas-red to-christmas-green bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">
             Mon Agenda Familial
           </h1>
           <p className="mt-2 text-sm text-gray-700 font-medium">
@@ -105,9 +105,9 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.3, ease: "easeOut" }}
         >
-          <Card className="border-2 border-christmas-gold/40 shadow-2xl backdrop-blur-sm bg-white/95">
-            <CardHeader className="border-b-2 border-christmas-gold/30 bg-gradient-to-r from-christmas-cream/30 to-transparent">
-              <CardTitle className="text-christmas-red text-xl font-bold">
+          <Card className="border-2 border-secondary/40 shadow-2xl backdrop-blur-sm bg-white/95">
+            <CardHeader className="border-b-2 border-secondary/30 bg-linear-to-r from-background/30 to-transparent">
+              <CardTitle className="text-primary text-xl font-bold">
                 {selectedEmail ? "🎅 Connexion" : "🎁 Sélection du membre"}
               </CardTitle>
             </CardHeader>
@@ -125,7 +125,7 @@ export default function LoginPage() {
                 <Button
                   variant="ghost"
                   onClick={handleBackToSelection}
-                  className="text-sm text-christmas-green hover:text-christmas-green-dark hover:bg-christmas-green/10 -ml-2 transition-colors duration-200 font-medium"
+                  className="text-sm text-chart-2 hover:text-chart-2 hover:bg-chart-2/10 -ml-2 transition-colors duration-200 font-medium"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   Changer de membre

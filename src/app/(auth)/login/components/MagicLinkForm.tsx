@@ -48,7 +48,7 @@ export function MagicLinkForm({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <Card className="border-2 border-christmas-green bg-gradient-to-br from-christmas-green/10 to-christmas-green/5">
+        <Card className="border-2 border-chart-2 bg-linear-to-br from-chart-2/10 to-chart-2/5">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center space-y-4">
               {/* Icône de succès avec animation de pop optimisée */}
@@ -62,17 +62,17 @@ export function MagicLinkForm({
                   damping: 20,
                 }}
               >
-                <CheckCircle2 className="h-16 w-16 text-christmas-green drop-shadow-lg" />
+                <CheckCircle2 className="h-16 w-16 text-chart-2 drop-shadow-lg" />
               </motion.div>
 
               {/* Texte avec animation rapide */}
               <div>
-                <h3 className="font-bold text-xl text-christmas-green-dark">
+                <h3 className="font-bold text-xl text-chart-2">
                   🎉 Email envoyé avec succès !
                 </h3>
                 <p className="text-sm text-gray-700 mt-2">
                   Un lien de connexion magique a été envoyé à{" "}
-                  <strong className="text-christmas-red">{email}</strong>
+                  <strong className="text-primary">{email}</strong>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
                   ✨ Vérifiez votre boîte de réception et cliquez sur le lien
@@ -84,7 +84,7 @@ export function MagicLinkForm({
               <Button
                 variant="outline"
                 onClick={() => setSent(false)}
-                className="mt-4 border-2 border-christmas-green text-christmas-green hover:bg-christmas-green hover:text-white transition-all duration-200 font-semibold"
+                className="mt-4 border-2 border-chart-2 text-chart-2 hover:bg-chart-2 hover:text-white transition-all duration-200 font-semibold"
               >
                 🔄 Renvoyer le lien
               </Button>
@@ -101,12 +101,12 @@ export function MagicLinkForm({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <Card className="border-2 border-christmas-gold/40">
+      <Card className="border-2 border-secondary/40">
         <CardContent className="pt-6">
           <div className="space-y-4">
             {/* Message d'accueil - pas d'animation pour éviter lag */}
             <div className="text-center">
-              <h3 className="font-bold text-xl text-christmas-red">
+              <h3 className="font-bold text-xl text-primary">
                 🎅 Bonjour, {userName} !
               </h3>
               <CardDescription className="mt-2 text-gray-700">
@@ -118,7 +118,7 @@ export function MagicLinkForm({
             {/* Message d'erreur optimisé */}
             {error && (
               <motion.div
-                className="flex items-center gap-2 p-3 bg-christmas-red/10 text-christmas-red rounded-md border border-christmas-red/30"
+                className="flex items-center gap-2 p-3 bg-primary/10 text-primary rounded-md border border-primary/30"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.2 }}
@@ -129,9 +129,9 @@ export function MagicLinkForm({
             )}
 
             {/* Affichage de l'email avec style festif - animation subtile supprimée */}
-            <div className="bg-linear-to-r from-christmas-cream to-christmas-gold/10 p-4 rounded-lg border-2 border-christmas-gold/40 shadow-sm">
+            <div className="bg-linear-to-r from-background to-secondary/10 p-4 rounded-lg border-2 border-secondary/40 shadow-sm">
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-christmas-gold shrink-0" />
+                <Mail className="h-5 w-5 text-secondary shrink-0" />
                 <p className="text-sm font-semibold text-gray-800 break-all">
                   {email}
                 </p>
@@ -142,7 +142,7 @@ export function MagicLinkForm({
             <Button
               onClick={handleSendLink}
               disabled={loading}
-              className="w-full h-11 px-8 inline-flex items-center justify-center rounded-md text-white font-bold bg-linear-to-r from-christmas-red to-christmas-red-light hover:from-christmas-red-dark hover:to-christmas-red shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-christmas-red focus-visible:ring-offset-2"
+              className="w-full h-11 px-8 inline-flex items-center justify-center rounded-md text-white font-bold bg-linear-to-r from-primary to-primary hover:from-primary hover:to-primary shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
