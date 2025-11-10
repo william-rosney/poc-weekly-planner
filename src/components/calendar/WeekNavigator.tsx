@@ -78,18 +78,17 @@ export function WeekNavigator({
     }
   };
 
-  // Reusable calendar picker component with Christmas theme
+  // Reusable calendar picker component
   const calendarPickerElement = (
     <CalendarPicker
       mode="single"
       selected={selectedDate}
       onSelect={handleDateSelect}
       locale={fr}
-      initialFocus
       captionLayout="dropdown-months"
-      fromYear={2020}
-      toYear={2030}
-      className="rounded-lg"
+      startMonth={new Date(2020, 0)}
+      endMonth={new Date(2030, 11)}
+      className="rounded-lg border shadow-sm"
     />
   );
 
@@ -105,63 +104,68 @@ export function WeekNavigator({
   );
 
   return (
-    <div className="flex items-center justify-center gap-4 mb-4 shrink-0">
-      {/* Previous button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handlePrev}
-        className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
-        aria-label="Semaine précédente"
-      >
-        <ChevronLeft className="h-4 w-4 text-christmas-red" />
-      </Button>
+    <>
+      <div className="flex items-center justify-center gap-4 mb-4 shrink-0">
+        {/* Previous button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handlePrev}
+          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
+          aria-label="Semaine précédente"
+        >
+          <ChevronLeft className="h-4 w-4 text-christmas-red" />
+        </Button>
 
-      {/* Center: Title + Date Picker + Today button */}
-      <div className="flex items-center gap-3">
-        {/* Date picker (Popover on desktop, Sheet on mobile) */}
-        {isMobile ? (
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>{titleButton}</SheetTrigger>
-            <SheetContent side="bottom" className="h-auto">
-              <SheetHeader className="mb-4">
-                <SheetTitle>Sélectionner une date</SheetTitle>
-              </SheetHeader>
-              <div className="flex justify-center">{calendarPickerElement}</div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>{titleButton}</PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="center">
-              {calendarPickerElement}
-            </PopoverContent>
-          </Popover>
-        )}
+        {/* Center: Title + Date Picker + Today button */}
+        <div className="flex items-center gap-3">
+          {/* Date picker (Popover on desktop, Sheet on mobile) */}
+          {isMobile ? (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>{titleButton}</SheetTrigger>
+              <SheetContent side="bottom" className="h-auto">
+                <SheetHeader className="mb-4">
+                  <SheetTitle>Sélectionner une date</SheetTitle>
+                </SheetHeader>
+                <div className="flex justify-center">{calendarPickerElement}</div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Popover open={isOpen} onOpenChange={setIsOpen}>
+              <PopoverTrigger asChild>{titleButton}</PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0 border-2 border-christmas-gold shadow-lg"
+                align="center"
+              >
+                {calendarPickerElement}
+              </PopoverContent>
+            </Popover>
+          )}
 
-        {/* Today button (desktop only) */}
-        {!isMobile && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleToday}
-            className="h-7 px-3 text-xs border-christmas-red/30 text-christmas-red hover:bg-christmas-cream/50"
-          >
-            Aujourd&apos;hui
-          </Button>
-        )}
+          {/* Today button (desktop only) */}
+          {!isMobile && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToday}
+              className="h-7 px-3 text-xs border-christmas-red/30 text-christmas-red hover:bg-christmas-cream/50"
+            >
+              Aujourd&apos;hui
+            </Button>
+          )}
+        </div>
+
+        {/* Next button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNext}
+          className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
+          aria-label="Semaine suivante"
+        >
+          <ChevronRight className="h-4 w-4 text-christmas-red" />
+        </Button>
       </div>
-
-      {/* Next button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleNext}
-        className="h-8 w-8 p-0 hover:bg-christmas-cream/50"
-        aria-label="Semaine suivante"
-      >
-        <ChevronRight className="h-4 w-4 text-christmas-red" />
-      </Button>
-    </div>
+    </>
   );
 }
