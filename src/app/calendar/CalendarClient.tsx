@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { LogOut } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -171,11 +172,11 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
         animate={{ y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-          {/* Titre avec icône de Noël */}
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-4 flex justify-between items-center relative">
+          {/* Titre avec icône de Noël - centré sur mobile */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-center sm:justify-start">
             <motion.span
-              className="text-3xl"
+              className="text-xl sm:text-3xl"
               animate={{
                 rotate: [0, -8, 8, -8, 0],
               }}
@@ -188,21 +189,35 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
             >
               🎄
             </motion.span>
-            <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-chart-2 bg-clip-text text-transparent">
+            <h1 className="text-base sm:text-2xl font-bold bg-linear-to-r from-primary to-chart-2 bg-clip-text text-transparent">
               Mon Agenda Familial
             </h1>
           </div>
 
-          {/* Section utilisateur et déconnexion - hover optimisé */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-700 font-medium">
+          {/* Bouton déconnexion - icône sur mobile, texte sur desktop */}
+          <div className="flex items-center gap-2 sm:gap-4 absolute right-3 sm:relative sm:right-0">
+            {/* Message de bienvenue - caché sur mobile */}
+            <span className="hidden sm:inline text-sm text-gray-700 font-medium">
               🎅 Bonjour,{" "}
               <strong className="text-primary">{initialUser.name}</strong>
             </span>
+
+            {/* Bouton déconnexion - version mobile (icône seulement) */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="sm:hidden text-primary hover:bg-primary hover:text-white transition-all duration-200 h-8 w-8"
+              aria-label="Déconnexion"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+
+            {/* Bouton déconnexion - version desktop (avec texte) */}
             <Button
               variant="outline"
               onClick={handleSignOut}
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
+              className="hidden sm:flex border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
             >
               Déconnexion
             </Button>
