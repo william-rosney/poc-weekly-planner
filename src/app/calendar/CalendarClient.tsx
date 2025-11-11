@@ -94,6 +94,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
             end_time: values.end_time.toISOString(),
             description: values.description,
             link: values.link,
+            place: values.place,
             cost_per_person: values.cost_per_person,
             color: values.color,
           }
@@ -111,6 +112,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
           end_time: values.end_time.toISOString(),
           description: values.description,
           link: values.link,
+          place: values.place,
           cost_per_person: values.cost_per_person,
           color: values.color,
           user_id: values.user_id,
