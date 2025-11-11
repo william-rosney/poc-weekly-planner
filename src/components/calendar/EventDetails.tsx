@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Edit,
   Trash2,
+  MapPin,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -33,6 +34,15 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
 
   const formatTime = (date: Date) => {
     return format(date, "HH:mm", { locale: fr });
+  };
+
+  const isUrl = (text: string) => {
+    try {
+      new URL(text);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   return (
@@ -128,6 +138,29 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
                 <span className="truncate">{event.link}</span>
                 <ExternalLink className="h-3 w-3 flex-shrink-0" />
               </a>
+            </div>
+          </div>
+        )}
+
+        {/* Lieu */}
+        {event.place && (
+          <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+            <MapPin className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <div className="font-semibold text-gray-900 mb-2">Lieu</div>
+              {isUrl(event.place) ? (
+                <a
+                  href={event.place}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm break-all"
+                >
+                  <span className="truncate">{event.place}</span>
+                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                </a>
+              ) : (
+                <p className="text-sm text-gray-700">{event.place}</p>
+              )}
             </div>
           </div>
         )}
