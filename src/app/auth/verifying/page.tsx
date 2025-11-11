@@ -1,99 +1,63 @@
-"use client";
-
-import { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { VerifyingClient } from "./VerifyingClient";
 
 /**
- * Composant de spinner de vérification
- */
-function VerifyingSpinner() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background via-primary/10 to-chart-2/10">
-      <motion.div
-        className="text-center p-8 bg-white rounded-lg shadow-xl"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        {/* Spinner de chargement avec animation */}
-        <motion.div
-          className="inline-block h-16 w-16 rounded-full border-4 border-solid border-primary border-r-transparent mb-6"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        />
-
-        <h1 className="text-2xl font-bold text-chart-2 mb-2">
-          Connexion en cours...
-        </h1>
-        <p className="text-gray-600">Vérification de votre identité</p>
-
-        {/* Animation de points */}
-        <motion.div
-          className="flex justify-center gap-1 mt-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-2 h-2 bg-secondary rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
-          ))}
-        </motion.div>
-      </motion.div>
-    </div>
-  );
-}
-
-/**
- * Composant interne qui gère la redirection avec useSearchParams
- * Doit être enveloppé dans Suspense
- */
-function VerifyingContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    // Attendre 1 seconde pour donner un feedback visuel
-    // puis rediriger vers la destination
-    const next = searchParams.get("next") ?? "/calendar";
-
-    const timer = setTimeout(() => {
-      router.push(next);
-      router.refresh(); // Force Server Component refresh
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [router, searchParams]);
-
-  return <VerifyingSpinner />;
-}
-
-/**
- * Page de vérification de session après authentification - Client Component
+ * Page de vérification de session après authentification - Server Component
  *
- * Cette page affiche un spinner pendant que la session est vérifiée
- * puis redirige automatiquement vers la destination
- *
- * Le Route Handler a déjà échangé le code pour une session,
- * cette page attend juste un peu pour donner un feedback visuel
- * puis redirige l'utilisateur
+ * Cette page :
+ * 1. Vérifie la session de l'utilisateur
+ * 2. S'assure que auth_id est lié dans public.users (fallback si trigger DB échoue)
+ * 3. Affiche un spinner via le Client Component
+ * 4. Redirige automatiquement vers la destination
  */
-export default function VerifyingPage() {
-  return (
-    <Suspense fallback={<VerifyingSpinner />}>
-      <VerifyingContent />
-    </Suspense>
-  );
+export default async function VerifyingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const supabase = await createClient();
+  const params = await searchParams;
+  const next = params.next ?? "/calendar";
+
+  // Récupérer l'utilisateur authentifié
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  // Si pas d'utilisateur authentifié, rediriger vers login
+  if (userError || !user) {
+    console.error("[VerifyingPage] No authenticated user:", userError);
+    redirect("/login?error=no_session");
+  }
+
+  // Vérifier si l'auth_id est déjà lié dans public.users
+  const { data: publicUser, error: fetchError } = await supabase
+    .from("users")
+    .select("id, auth_id, email")
+    .eq("email", user.email)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error("[VerifyingPage] Error fetching public user:", fetchError);
+  }
+
+  // Si l'utilisateur existe mais auth_id est NULL, le mettre à jour (fallback)
+  if (publicUser && !publicUser.auth_id) {
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ auth_id: user.id })
+      .eq("id", publicUser.id);
+
+    if (updateError) {
+      console.error(
+        "[VerifyingPage] Error updating auth_id (fallback):",
+        updateError
+      );
+    }
+  }
+
+  // Afficher le spinner de chargement et rediriger côté client
+  return <VerifyingClient next={next} />;
 }
