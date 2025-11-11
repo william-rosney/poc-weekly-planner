@@ -14,6 +14,11 @@ export const eventFormSchema = z
     }),
     description: z.string().optional(),
     link: z.string().url("L'URL doit être valide").optional().or(z.literal("")),
+    place: z
+      .string()
+      .max(255, "Le lieu ne peut pas dépasser 255 caractères")
+      .optional()
+      .or(z.literal("")),
     cost_per_person: z
       .number()
       .positive("Le coût doit être positif")

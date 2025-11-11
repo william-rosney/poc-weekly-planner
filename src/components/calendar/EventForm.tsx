@@ -64,6 +64,7 @@ export function EventForm({
       end_time: defaultValues?.end_time || new Date(),
       description: defaultValues?.description || "",
       link: defaultValues?.link || "",
+      place: defaultValues?.place || "",
       cost_per_person: defaultValues?.cost_per_person || undefined,
       color: defaultValues?.color || DEFAULT_EVENT_COLOR,
       user_id: defaultValues?.user_id || "",
@@ -291,6 +292,26 @@ export function EventForm({
                 <Input
                   type="url"
                   placeholder="https://..."
+                  {...field}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Lieu */}
+        <FormField
+          control={form.control}
+          name="place"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Lieu</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="Adresse ou lien Google Maps..."
                   {...field}
                   disabled={isLoading}
                 />

@@ -20,6 +20,7 @@ export interface Event {
   end_time: string;
   user_id: string;
   link?: string;
+  place?: string;
   cost_per_person?: number;
   color?: string;
   created_at: string;
