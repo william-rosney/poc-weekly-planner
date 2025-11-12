@@ -38,6 +38,21 @@ export function WeekNavigator({
 }: WeekNavigatorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [displayedMonth, setDisplayedMonth] = useState<Date>(new Date());
+
+  // Sync date when opening picker
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      const calendarApi = calendarRef.current?.getApi();
+      if (calendarApi) {
+        const currentDate = calendarApi.getDate();
+        // Update both selected date and displayed month
+        setSelectedDate(currentDate);
+        setDisplayedMonth(currentDate);
+      }
+    }
+    setIsOpen(open);
+  };
 
   // Navigation handlers
   const handlePrev = () => {
@@ -72,7 +87,6 @@ export function WeekNavigator({
     if (calendarApi) {
       // Navigate to the selected date
       calendarApi.gotoDate(date);
-      setSelectedDate(date);
       setIsOpen(false);
       onNavigate?.();
     }
@@ -81,8 +95,11 @@ export function WeekNavigator({
   // Reusable calendar picker component
   const calendarPickerElement = (
     <CalendarPicker
+      key={selectedDate.getTime()}
       mode="single"
       selected={selectedDate}
+      month={displayedMonth}
+      onMonthChange={setDisplayedMonth}
       onSelect={handleDateSelect}
       locale={fr}
       captionLayout="dropdown-months"
@@ -121,7 +138,7 @@ export function WeekNavigator({
         <div className="flex items-center gap-3 justify-center">
           {/* Date picker (Popover on desktop, Sheet on mobile) */}
           {isMobile ? (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet open={isOpen} onOpenChange={handleOpenChange}>
               <SheetTrigger asChild>{titleButton}</SheetTrigger>
               <SheetContent side="bottom" className="h-auto">
                 <SheetHeader className="mb-4">
@@ -131,7 +148,7 @@ export function WeekNavigator({
               </SheetContent>
             </Sheet>
           ) : (
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <Popover open={isOpen} onOpenChange={handleOpenChange}>
               <PopoverTrigger asChild>{titleButton}</PopoverTrigger>
               <PopoverContent
                 className="w-auto p-0 border-2 border-secondary shadow-lg"

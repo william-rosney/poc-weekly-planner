@@ -193,7 +193,7 @@ export function Calendar({
           slotMaxTime="23:00:00"
           height="auto"
           locale="fr"
-          firstDay={1} // Monday
+          firstDay={6} // Friday
           nowIndicator={true}
           allDaySlot={false}
           slotDuration="00:30:00"
