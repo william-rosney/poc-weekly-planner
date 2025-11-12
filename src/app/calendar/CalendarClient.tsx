@@ -167,7 +167,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
 
       {/* Header avec design de Noël - animation d'entrée rapide */}
       <motion.header
-        className="shrink-0 bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-secondary relative z-10"
+        className="sticky top-0 shrink-0 bg-white/95 backdrop-blur-sm shadow-lg border-b-4 border-secondary z-50"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -249,14 +249,16 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
                 </div>
               )}
 
-              <div className="flex-1 min-h-0">
-                <Calendar
-                  events={events}
-                  loading={eventsLoading}
-                  onEventClick={handleEventClick}
-                  onDateSelect={handleDateSelect}
-                  onEventUpdate={handleEventUpdate}
-                />
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="h-full">
+                  <Calendar
+                    events={events}
+                    loading={eventsLoading}
+                    onEventClick={handleEventClick}
+                    onDateSelect={handleDateSelect}
+                    onEventUpdate={handleEventUpdate}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
