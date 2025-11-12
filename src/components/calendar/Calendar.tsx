@@ -8,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { Event } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { WeekNavigator } from "@/components/calendar/WeekNavigator";
+import { tr } from "date-fns/locale";
 
 interface CalendarProps {
   events: Event[];
@@ -190,10 +191,13 @@ export function Calendar({
           dayMaxEvents={true}
           weekends={true}
           slotMinTime="06:00:00"
-          slotMaxTime="23:00:00"
+          slotMaxTime="24:00:00"
+          longPressDelay={300}
+          eventShortHeight={46}
+          eventMinHeight={30}
           height="auto"
           locale="fr"
-          firstDay={1} // Monday
+          firstDay={6} // Friday
           nowIndicator={true}
           allDaySlot={false}
           slotDuration="00:30:00"
@@ -278,6 +282,11 @@ export function Calendar({
           font-size: 0.7rem; /* Smaller text for time labels */
         }
 
+        /* Increase height of time slots for better visibility */
+        .fc .fc-timegrid-slot {
+          height: 1.75rem; /* Increased from default ~1.5rem */
+        }
+
         .fc .fc-timegrid-now-indicator-line {
           border-color: var(--secondary);
         }
@@ -294,6 +303,28 @@ export function Calendar({
 
         .fc-event-title {
           font-weight: 600;
+        }
+
+        /* Short events: display time and title on same line */
+        .fc-timegrid-event-short .fc-event-main {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 0.375rem;
+          overflow: hidden;
+          font-size: 0.8rem;
+        }
+
+        .fc-timegrid-event-short .fc-event-time {
+          display: none;
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
+
+        .fc-timegrid-event-short .fc-event-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         /* Today highlight */

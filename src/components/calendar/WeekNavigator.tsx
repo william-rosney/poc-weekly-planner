@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarSearch, Calendar1 } from "lucide-react";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +38,21 @@ export function WeekNavigator({
 }: WeekNavigatorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [displayedMonth, setDisplayedMonth] = useState<Date>(new Date());
+
+  // Sync date when opening picker
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      const calendarApi = calendarRef.current?.getApi();
+      if (calendarApi) {
+        const currentDate = calendarApi.getDate();
+        // Update both selected date and displayed month
+        setSelectedDate(currentDate);
+        setDisplayedMonth(currentDate);
+      }
+    }
+    setIsOpen(open);
+  };
 
   // Navigation handlers
   const handlePrev = () => {
@@ -72,7 +87,6 @@ export function WeekNavigator({
     if (calendarApi) {
       // Navigate to the selected date
       calendarApi.gotoDate(date);
-      setSelectedDate(date);
       setIsOpen(false);
       onNavigate?.();
     }
@@ -81,8 +95,11 @@ export function WeekNavigator({
   // Reusable calendar picker component
   const calendarPickerElement = (
     <CalendarPicker
+      key={selectedDate.getTime()}
       mode="single"
       selected={selectedDate}
+      month={displayedMonth}
+      onMonthChange={setDisplayedMonth}
       onSelect={handleDateSelect}
       locale={fr}
       captionLayout="dropdown-months"
@@ -95,17 +112,17 @@ export function WeekNavigator({
   // Title button with click handler and visual indicator
   const titleButton = (
     <button
-      className="group flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
+      className="group flex items-center gap-2 px-3 py-1.5 rounded-md border border-border/40 hover:border-border/70 hover:bg-background/20 transition-all"
       aria-label="Sélectionner une date"
     >
       <h2 className="text-sm font-semibold text-gray-700">{currentTitle}</h2>
-      <CalendarIcon className="h-3.5 w-3.5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+      <CalendarSearch className="h-3.5 w-3.5 text-secondary opacity-60 group-hover:opacity-100 transition-opacity" />
     </button>
   );
 
   return (
     <>
-      <div className="flex items-center justify-center gap-4 mb-4 shrink-0">
+      <div className="flex items-center justify-center gap-2 mb-4 shrink-0">
         {/* Previous button */}
         <Button
           variant="ghost"
@@ -118,10 +135,10 @@ export function WeekNavigator({
         </Button>
 
         {/* Center: Title + Date Picker + Today button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-center">
           {/* Date picker (Popover on desktop, Sheet on mobile) */}
           {isMobile ? (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet open={isOpen} onOpenChange={handleOpenChange}>
               <SheetTrigger asChild>{titleButton}</SheetTrigger>
               <SheetContent side="bottom" className="h-auto">
                 <SheetHeader className="mb-4">
@@ -131,7 +148,7 @@ export function WeekNavigator({
               </SheetContent>
             </Sheet>
           ) : (
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <Popover open={isOpen} onOpenChange={handleOpenChange}>
               <PopoverTrigger asChild>{titleButton}</PopoverTrigger>
               <PopoverContent
                 className="w-auto p-0 border-2 border-secondary shadow-lg"
@@ -142,8 +159,18 @@ export function WeekNavigator({
             </Popover>
           )}
 
-          {/* Today button (desktop only) */}
-          {!isMobile && (
+          {/* Today button - icon on mobile, text on desktop */}
+          {isMobile ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleToday}
+              className="h-8 w-8 p-0 hover:bg-background/50"
+              aria-label="Aujourd'hui"
+            >
+              <Calendar1 className="h-4 w-4 text-primary" />
+            </Button>
+          ) : (
             <Button
               variant="outline"
               size="sm"
