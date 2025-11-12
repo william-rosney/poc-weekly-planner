@@ -161,7 +161,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-linear-to-br from-background via-primary/10 to-chart-2/10 relative">
+    <div className="h-screen supports-[height:100svh]:h-svh flex flex-col overflow-hidden bg-linear-to-br from-background via-primary/10 to-chart-2/10 relative">
       {/* Fond animé avec flocons de neige */}
       <SnowfallBackground />
 
