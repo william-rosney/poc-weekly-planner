@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { LogOut } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -171,64 +172,84 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
         animate={{ y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-          {/* Titre avec icône de Noël */}
-          <div className="flex items-center gap-3">
-            <motion.span
-              className="text-3xl"
-              animate={{
-                rotate: [0, -8, 8, -8, 0],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                repeatDelay: 4,
-                ease: "easeInOut",
-              }}
-            >
-              🎄
-            </motion.span>
-            <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-chart-2 bg-clip-text text-transparent">
-              Mon Agenda Familial
-            </h1>
-          </div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-4">
+          {/* Sur mobile: layout en colonne avec 2 lignes, sur desktop: une seule ligne */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+            {/* Ligne 1 sur mobile: Titre centré + icône déconnexion */}
+            <div className="flex justify-between items-center sm:justify-start">
+              {/* Titre avec icône de Noël */}
+              <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial justify-center sm:justify-start">
+                <motion.span
+                  className="text-xl sm:text-3xl"
+                  animate={{
+                    rotate: [0, -8, 8, -8, 0],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    repeatDelay: 4,
+                    ease: "easeInOut",
+                  }}
+                >
+                  🎄
+                </motion.span>
+                <h1 className="text-base sm:text-2xl font-bold bg-linear-to-r from-primary to-chart-2 bg-clip-text text-transparent">
+                  Mon Agenda Familial
+                </h1>
+              </div>
 
-          {/* Section utilisateur et déconnexion - hover optimisé */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-700 font-medium">
-              🎅 Bonjour,{" "}
-              <strong className="text-primary">{initialUser.name}</strong>
-            </span>
-            <Button
-              variant="outline"
-              onClick={handleSignOut}
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
-            >
-              Déconnexion
-            </Button>
+              {/* Bouton déconnexion mobile uniquement (à droite du titre) */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSignOut}
+                className="sm:hidden text-primary hover:bg-primary hover:text-white transition-all duration-200 h-8 w-8 shrink-0"
+                aria-label="Déconnexion"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Ligne 2 sur mobile: Message de bienvenue centré, sur desktop: message + bouton déconnexion */}
+            <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4">
+              {/* Message de bienvenue */}
+              <span className="text-xs sm:text-sm text-gray-700 font-medium">
+                🎅 Bonjour, <strong className="text-primary">{initialUser.name}</strong>
+              </span>
+
+              {/* Bouton déconnexion - version desktop uniquement */}
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="hidden sm:flex border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
+              >
+                Déconnexion
+              </Button>
+            </div>
           </div>
         </div>
       </motion.header>
 
       {/* Contenu principal - animations optimisées */}
-      <main className="flex-1 overflow-y-auto max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      <main className="flex-1 overflow-hidden max-w-7xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-4 relative z-10 flex flex-col">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.3, ease: "easeOut" }}
+          className="flex-1 flex flex-col min-h-0"
         >
-          <Card className="border-2 border-secondary/40 shadow-2xl backdrop-blur-sm bg-white/95">
-            <CardContent className="p-4">
+          <Card className="border-2 border-secondary/40 shadow-2xl backdrop-blur-sm bg-white/95 flex-1 flex flex-col min-h-0">
+            <CardContent className="p-2 sm:p-4 flex-1 flex flex-col min-h-0">
               {error && (
-                <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
-                  <p className="text-red-800 font-semibold">
+                <div className="mb-2 sm:mb-4 p-3 sm:p-4 bg-red-50 border-2 border-red-200 rounded-lg shrink-0">
+                  <p className="text-red-800 font-semibold text-sm sm:text-base">
                     ⚠️ Erreur lors du chargement des événements
                   </p>
-                  <p className="text-red-600 text-sm mt-1">{error}</p>
+                  <p className="text-red-600 text-xs sm:text-sm mt-1">{error}</p>
                 </div>
               )}
 
-              <div style={{ height: "calc(100vh - 280px)" }}>
+              <div className="flex-1 min-h-0">
                 <Calendar
                   events={events}
                   loading={eventsLoading}
