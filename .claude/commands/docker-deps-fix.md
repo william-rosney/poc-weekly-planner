@@ -27,11 +27,13 @@ Fix npm package-lock.json sync issues that prevent Docker builds from succeeding
 Execute the following commands in order:
 
 1. Clean and reinstall:
+
    ```bash
    rm -rf node_modules package-lock.json && npm install
    ```
 
 2. Fix @swc/helpers version:
+
    ```bash
    npm install @swc/helpers@0.5.17 --save-exact
    ```

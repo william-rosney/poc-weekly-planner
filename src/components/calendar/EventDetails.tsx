@@ -10,9 +10,12 @@ import {
   Edit,
   Trash2,
   MapPin,
+  Copy,
+  CopyCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useState } from "react";
 
 interface EventDetailsProps {
   event: Event;
@@ -25,6 +28,8 @@ interface EventDetailsProps {
  * Mode lecture seule avec bouton d'édition
  */
 export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
+  const [copiedPlace, setCopiedPlace] = useState(false);
+
   const startDate = new Date(event.start_time);
   const endDate = new Date(event.end_time);
 
@@ -45,6 +50,18 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     }
   };
 
+  const copyPlaceToClipboard = async () => {
+    if (event.place) {
+      try {
+        await navigator.clipboard.writeText(event.place);
+        setCopiedPlace(true);
+        setTimeout(() => setCopiedPlace(false), 2000);
+      } catch (error: unknown) {
+        console.error("Failed to copy place:", error);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header avec titre et actions */}
@@ -53,11 +70,6 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {event.title}
           </h2>
-          {event.description && (
-            <p className="text-gray-700 text-base leading-relaxed">
-              {event.description}
-            </p>
-          )}
         </div>
 
         <div className="flex gap-2">
@@ -80,11 +92,19 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         </div>
       </div>
 
+      <div className="flex-1">
+        {event.description && (
+          <p className="text-gray-700 text-base leading-relaxed text-justify">
+            {event.description}
+          </p>
+        )}
+      </div>
+
       {/* Détails de l'événement */}
       <div className="space-y-4">
         {/* Date et heure */}
         <div className="flex items-start gap-3 p-4 bg-background/30 rounded-lg">
-          <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          <Calendar className="h-5 w-5 text-primary mt-0.5 shrink-0" />
           <div className="flex-1">
             <div className="font-semibold text-gray-900 mb-1">
               {formatDate(startDate)}
@@ -115,7 +135,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
                 Coût par personne
               </div>
               <div className="text-lg font-bold text-green-600">
-                {event.cost_per_person.toFixed(2)} €
+                {event.cost_per_person.toFixed(2)} $
               </div>
             </div>
           </div>
@@ -124,8 +144,8 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         {/* Lien externe */}
         {event.link && (
           <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-            <ExternalLink className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
+            <ExternalLink className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+            <div className="flex-1 min-w-0">
               <div className="font-semibold text-gray-900 mb-2">
                 Lien associé
               </div>
@@ -133,10 +153,10 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
                 href={event.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline text-sm break-all"
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline text-sm"
               >
-                <span className="truncate">{event.link}</span>
-                <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate min-w-0">{event.link}</span>
+                <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </div>
           </div>
@@ -145,18 +165,33 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         {/* Lieu */}
         {event.place && (
           <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-            <MapPin className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <div className="font-semibold text-gray-900 mb-2">Lieu</div>
+            <MapPin className="h-5 w-5 text-purple-600 mt-0.5 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="font-semibold text-gray-900">Lieu</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={copyPlaceToClipboard}
+                  className="h-7 w-7 hover:bg-purple-100"
+                  title="Copier le lieu"
+                >
+                  {copiedPlace ? (
+                    <CopyCheck className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-purple-600" />
+                  )}
+                </Button>
+              </div>
               {isUrl(event.place) ? (
                 <a
                   href={event.place}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm break-all"
+                  className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm"
                 >
-                  <span className="truncate">{event.place}</span>
-                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate min-w-0">{event.place}</span>
+                  <ExternalLink className="h-3 w-3 shrink-0" />
                 </a>
               ) : (
                 <p className="text-sm text-gray-700">{event.place}</p>

@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarSearch, Calendar1 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CalendarSearch,
+  Calendar1,
+} from "lucide-react";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import {
@@ -144,7 +149,9 @@ export function WeekNavigator({
                 <SheetHeader className="mb-4">
                   <SheetTitle>Sélectionner une date</SheetTitle>
                 </SheetHeader>
-                <div className="flex justify-center">{calendarPickerElement}</div>
+                <div className="flex justify-center">
+                  {calendarPickerElement}
+                </div>
               </SheetContent>
             </Sheet>
           ) : (

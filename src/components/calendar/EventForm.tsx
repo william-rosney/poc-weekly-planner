@@ -400,11 +400,7 @@ export function EventForm({
           >
             Annuler
           </Button>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1"
-          >
+          <Button type="submit" disabled={isLoading} className="flex-1">
             {isLoading ? "Enregistrement..." : submitLabel}
           </Button>
         </div>

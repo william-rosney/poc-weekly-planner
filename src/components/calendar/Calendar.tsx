@@ -8,7 +8,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { Event } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { WeekNavigator } from "@/components/calendar/WeekNavigator";
-import { tr } from "date-fns/locale";
 
 interface CalendarProps {
   events: Event[];
@@ -257,15 +256,11 @@ export function Calendar({
 
         .fc-theme-standard td,
         .fc-theme-standard th {
-          border-color: oklch(
-            from var(--secondary) l c h / 0.3
-          );
+          border-color: oklch(from var(--secondary) l c h / 0.3);
         }
 
         .fc .fc-col-header-cell {
-          background-color: oklch(
-            from var(--background) l c h / 0.5
-          );
+          background-color: oklch(from var(--background) l c h / 0.5);
           font-weight: 600;
           font-size: 0.75rem; /* text-xs */
           color: var(--primary);
@@ -336,9 +331,7 @@ export function Calendar({
 
         /* Selection highlight */
         .fc-highlight {
-          background-color: oklch(
-            from var(--primary) l c h / 0.1
-          ) !important;
+          background-color: oklch(from var(--primary) l c h / 0.1) !important;
         }
 
         /* Drag and drop styles */
@@ -353,11 +346,15 @@ export function Calendar({
         }
 
         .fc-event.fc-event-draggable {
-          cursor: move;
+          cursor: grab;
         }
 
         .fc-event.fc-event-resizable {
-          cursor: ew-resize;
+          cursor: grab;
+        }
+
+        .fc-event.fc-event-draggable:active {
+          cursor: grabbing;
         }
 
         .fc-event:hover {
