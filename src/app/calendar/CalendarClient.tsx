@@ -214,7 +214,8 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
             <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4">
               {/* Message de bienvenue */}
               <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                🎅 Bonjour, <strong className="text-primary">{initialUser.name}</strong>
+                🎅 Bonjour,{" "}
+                <strong className="text-primary">{initialUser.name}</strong>
               </span>
 
               {/* Bouton déconnexion - version desktop uniquement */}
@@ -245,7 +246,9 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
                   <p className="text-red-800 font-semibold text-sm sm:text-base">
                     ⚠️ Erreur lors du chargement des événements
                   </p>
-                  <p className="text-red-600 text-xs sm:text-sm mt-1">{error}</p>
+                  <p className="text-red-600 text-xs sm:text-sm mt-1">
+                    {error}
+                  </p>
                 </div>
               )}
 
