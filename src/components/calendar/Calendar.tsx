@@ -8,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { Event } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { WeekNavigator } from "@/components/calendar/WeekNavigator";
+import { tr } from "date-fns/locale";
 
 interface CalendarProps {
   events: Event[];
@@ -190,7 +191,8 @@ export function Calendar({
           dayMaxEvents={true}
           weekends={true}
           slotMinTime="06:00:00"
-          slotMaxTime="23:00:00"
+          slotMaxTime="24:00:00"
+          longPressDelay={300}
           eventShortHeight={46}
           eventMinHeight={30}
           height="auto"
