@@ -41,6 +41,24 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     return format(date, "HH:mm", { locale: fr });
   };
 
+  const formatDuration = (start: Date, end: Date) => {
+    const totalMinutes = Math.round(
+      (end.getTime() - start.getTime()) / (1000 * 60)
+    );
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours === 0) {
+      return `${minutes}min`;
+    }
+
+    if (minutes === 0) {
+      return `${hours}h`;
+    }
+
+    return `${hours}h${minutes.toString().padStart(2, "0")}`;
+  };
+
   const isUrl = (text: string) => {
     try {
       new URL(text);
@@ -116,11 +134,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
               </span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-500">
-                {(
-                  (endDate.getTime() - startDate.getTime()) /
-                  (1000 * 60 * 60)
-                ).toFixed(1)}
-                h
+                {formatDuration(startDate, endDate)}
               </span>
             </div>
           </div>
