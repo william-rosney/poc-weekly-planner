@@ -21,7 +21,6 @@ export const eventFormSchema = z
       .or(z.literal("")),
     cost_per_person: z
       .number()
-      .positive("Le coût doit être positif")
       .optional()
       .or(z.nan()),
     color: z

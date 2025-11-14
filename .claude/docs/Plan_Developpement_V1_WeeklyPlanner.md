@@ -97,16 +97,17 @@ Permettre d’ajouter, modifier et supprimer des événements dans le calendrier
 
 ### 🧱 Tâches
 
-- [ ] Créer un composant modal ou drawer pour ajouter/éditer un événement
-- [ ] Champs requis :
-  - [ ] Titre
-  - [ ] Date / heure
-  - [ ] Lien (optionnel)
-  - [ ] Coût par personne (optionnel)
-- [ ] Validation des formulaires (React Hook Form + Zod)
-- [ ] Ajout en base Supabase
-- [ ] Mise à jour et suppression des événements
-- [ ] Rafraîchissement automatique via Realtime
+- [x] Créer un composant modal ou drawer pour ajouter/éditer un événement
+- [x] Champs requis :
+  - [x] Titre
+  - [x] Date / heure
+  - [x] Lien (optionnel)
+  - [x] Lieu (optionnel)
+  - [x] Coût par personne (optionnel)
+- [x] Validation des formulaires (React Hook Form + Zod)
+- [x] Ajout en base Supabase
+- [x] Mise à jour et suppression des événements
+- [x] Rafraîchissement automatique via Realtime
 
 ### ✅ Livrable
 

@@ -141,7 +141,19 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         </div>
 
         {/* Coût par personne */}
-        {event.cost_per_person && event.cost_per_person > 0 && (
+        {
+          event.cost_per_person != null && event.cost_per_person === 0 && (
+            <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+            <div className="flex-1">
+              <div className="text-lg font-bold text-green-600">
+                Gratuit
+              </div>
+            </div>
+          </div>
+          )
+        }
+
+        {event.cost_per_person != null && event.cost_per_person > 0 && (
           <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
             <DollarSign className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
