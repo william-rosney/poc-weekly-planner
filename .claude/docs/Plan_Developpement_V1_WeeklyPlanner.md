@@ -115,24 +115,59 @@ Un calendrier interactif avec CRUD complet des événements.
 
 ---
 
-## 🧩 Étape 4 – Système de votes pour les événements
+## 🧩 Étape 4 – Système de votes pour les événements ⏳ **EN COURS**
 
 ### 🎯 Objectif
 
-Permettre aux membres de voter sur leur participation à chaque événement.
+Permettre aux membres de voter sur leur participation à chaque événement avec listes détaillées et gestion admin.
 
 ### 🧱 Tâches
 
-- [ ] Créer la table `votes` :
+- [x] Créer la table `votes` avec migration SQL :
   - id (uuid), event_id (FK), user_id (FK), status (enum : "yes" | "no" | "maybe")
-- [ ] Ajouter un composant de vote sur chaque événement
-- [ ] Sauvegarder les votes dans Supabase
-- [ ] Afficher le résumé des votes (ex. : 3 oui, 1 non, 1 peut-être)
-- [ ] Mettre à jour les votes en temps réel
+  - Contrainte unique (event_id, user_id) pour garantir l'exclusivité
+  - RLS policies : lecture publique, écriture limitée (users + admins)
+- [x] Créer le hook `useVotes` pour gérer les votes (CRUD + statistiques)
+- [x] Créer le hook `useUsers` pour récupérer les utilisateurs et le user courant
+- [x] Créer schéma de validation Zod pour les votes
+- [x] Créer composant `VoteListsDisplay` : affichage des listes de participants groupés par statut
+- [x] Créer composant `VoteSelector` : interface de vote pour l'utilisateur courant
+- [x] Créer composant `AdminVoteManager` : gestion des votes par les admins
+- [x] Intégrer les composants dans `EventDetails.tsx`
+- [ ] Appliquer la migration SQL en base de données
+- [ ] Tester avec utilisateur normal et admin
+- [ ] Vérifier la validation d'exclusivité (un user = une seule liste)
+- [ ] Vérifier les RLS policies (sécurité)
 
 ### ✅ Livrable
 
-Un calendrier interactif où chaque membre peut voter sur les événements.
+Un calendrier interactif où :
+- Chaque membre peut voter sur les événements (Oui / Non / Peut-être)
+- Les listes de participants sont visibles par tous avec noms et avatars
+- Les admins peuvent modifier les votes de tous les utilisateurs
+- La contrainte d'exclusivité empêche qu'un user soit dans 2 listes simultanément
+
+### 📄 Documentation
+
+Voir [VOTES_DEPLOYMENT_GUIDE.md](./.claude/docs/VOTES_DEPLOYMENT_GUIDE.md) pour le guide de déploiement et de test complet.
+
+### 📦 Fichiers Créés/Modifiés
+
+**Migration SQL :**
+- `supabase/migrations/009_create_votes_table.sql`
+
+**Hooks :**
+- `src/hooks/useVotes.ts` (nouveau)
+- `src/hooks/useUsers.ts` (nouveau)
+
+**Validation :**
+- `src/lib/validations/vote.ts` (nouveau)
+
+**Composants :**
+- `src/components/calendar/VoteListsDisplay.tsx` (nouveau)
+- `src/components/calendar/VoteSelector.tsx` (nouveau)
+- `src/components/calendar/AdminVoteManager.tsx` (nouveau)
+- `src/components/calendar/EventDetails.tsx` (modifié)
 
 ---
 
@@ -216,17 +251,17 @@ Une version hébergée, accessible à tous les membres de la famille.
 
 ## 🧭 Résumé visuel des étapes
 
-| Étape | Nom            | Statut      | Objectif principal                            |
-| ----- | -------------- | ----------- | --------------------------------------------- |
-| 0     | Initialisation | ✅ Terminée | Setup du projet Next.js + Tailwind + Supabase |
-| 1     | Auth           | ✅ Terminée | Magic Link + Sélecteur d'utilisateur          |
-| 2     | Calendrier     | ✅ Terminée | Vue hebdo avec FullCalendar                   |
-| 3     | CRUD           | ⏳ À faire  | Gestion complète des événements               |
-| 4     | Votes          | ⏳ À faire  | Système de participation                      |
-| 5     | UX             | ⏳ À faire  | Animations + UI responsive                    |
-| 6     | Realtime       | ⏳ À faire  | Synchronisation en direct                     |
-| 7     | Finalisation   | ⏳ À faire  | Tests + nettoyage                             |
-| 8     | Hébergement    | ⏳ À faire  | Déploiement sur Vercel                        |
+| Étape | Nom            | Statut       | Objectif principal                            |
+| ----- | -------------- | ------------ | --------------------------------------------- |
+| 0     | Initialisation | ✅ Terminée  | Setup du projet Next.js + Tailwind + Supabase |
+| 1     | Auth           | ✅ Terminée  | Magic Link + Sélecteur d'utilisateur          |
+| 2     | Calendrier     | ✅ Terminée  | Vue hebdo avec FullCalendar                   |
+| 3     | CRUD           | ✅ Terminée  | Gestion complète des événements               |
+| 4     | Votes          | ⏳ En cours  | Système de participation avec listes détaillées |
+| 5     | UX             | ⏳ À faire   | Animations + UI responsive                    |
+| 6     | Realtime       | ⏳ À faire   | Synchronisation en direct                     |
+| 7     | Finalisation   | ⏳ À faire   | Tests + nettoyage                             |
+| 8     | Hébergement    | ⏳ À faire   | Déploiement sur Vercel                        |
 
 ---
 
