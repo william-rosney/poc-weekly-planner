@@ -336,9 +336,9 @@ export function EventForm({
 
               return (
                 <FormItem>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex gap-4 max-w-xs">
                     <FormControl>
-                      <div className="relative">
+                      <div className="relative w-24">
                         <Input
                           type="number"
                           min="0"
@@ -361,7 +361,7 @@ export function EventForm({
                       </div>
                     </FormControl>
                     <FormControl>
-                      <div className="relative">
+                      <div className="relative w-24">
                         <Input
                           type="number"
                           min="0"

@@ -291,59 +291,57 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
           </div>
         )}
 
-        {/* Lieu */}
-        {event.place && (
+        {/* Lieu et Temps de trajet */}
+        {(event.place || (event.travel_time_minutes != null && event.travel_time_minutes > 0)) && (
           <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
             <MapPin className="h-5 w-5 text-purple-600 mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="font-semibold text-gray-900">Lieu</div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={copyPlaceToClipboard}
-                  className="h-7 w-7 hover:bg-purple-100"
-                  title="Copier le lieu"
-                >
-                  {copiedPlace ? (
-                    <CopyCheck className="h-4 w-4 text-green-600" />
+              {event.place ? (
+                <>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="font-semibold text-gray-900">Lieu</div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={copyPlaceToClipboard}
+                      className="h-7 w-7 hover:bg-purple-100"
+                      title="Copier le lieu"
+                    >
+                      {copiedPlace ? (
+                        <CopyCheck className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <Copy className="h-4 w-4 text-purple-600" />
+                      )}
+                    </Button>
+                  </div>
+                  {isUrl(event.place) ? (
+                    <a
+                      href={event.place}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm mb-2"
+                    >
+                      <span className="truncate min-w-0">{event.place}</span>
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
                   ) : (
-                    <Copy className="h-4 w-4 text-purple-600" />
+                    <p className="text-sm text-gray-700 mb-2">{event.place}</p>
                   )}
-                </Button>
-              </div>
-              {isUrl(event.place) ? (
-                <a
-                  href={event.place}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm"
-                >
-                  <span className="truncate min-w-0">{event.place}</span>
-                  <ExternalLink className="h-3 w-3 shrink-0" />
-                </a>
+                </>
               ) : (
-                <p className="text-sm text-gray-700">{event.place}</p>
+                <div className="font-semibold text-gray-900 mb-2">
+                  Temps de trajet
+                </div>
+              )}
+              {event.travel_time_minutes != null && event.travel_time_minutes > 0 && (
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <Car className="h-3.5 w-3.5" />
+                  <span>{formatTravelTime(event.travel_time_minutes)}</span>
+                </div>
               )}
             </div>
           </div>
         )}
-
-        {/* Temps de trajet */}
-        {event.travel_time_minutes != null &&
-          event.travel_time_minutes > 0 && (
-            <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
-              <Car className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <div className="font-semibold text-gray-900 mb-1">
-                  Temps de trajet
-                </div>
-                <div className="text-lg font-bold text-amber-600">
-                  {formatTravelTime(event.travel_time_minutes)}
-                </div>
-              </div>
-            </div>
-          )}
 
         {/* Participations */}
         <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
