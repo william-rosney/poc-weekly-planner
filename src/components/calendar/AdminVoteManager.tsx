@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -48,6 +48,20 @@ export function AdminVoteManager({
     Record<string, VoteStatus | null>
   >({});
   const [saving, setSaving] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll automatique quand l'édition commence
+  useEffect(() => {
+    if (isEditing && containerRef.current) {
+      // Délai pour laisser l'animation s'ouvrir complètement
+      setTimeout(() => {
+        containerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 300);
+    }
+  }, [isEditing]);
 
   // Ne pas afficher si l'utilisateur n'est pas admin
   if (!isAdmin) {
@@ -106,7 +120,7 @@ export function AdminVoteManager({
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={containerRef} className="space-y-4">
       <div className="flex items-center justify-between">
         {!isEditing && (
           <Button
