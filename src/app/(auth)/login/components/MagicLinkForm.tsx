@@ -129,10 +129,10 @@ export function MagicLinkForm({
             )}
 
             {/* Affichage de l'email avec style festif - animation subtile supprimée */}
-            <div className="bg-linear-to-r from-background to-secondary/10 p-4 rounded-lg border-2 border-secondary/40 shadow-sm">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-secondary shrink-0" />
-                <p className="text-sm font-semibold text-gray-800 break-all">
+            <div className="bg-linear-to-r from-background to-secondary/10 p-3 sm:p-4 rounded-lg border-2 border-secondary/40 shadow-sm">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-secondary shrink-0" />
+                <p className="text-xs sm:text-sm font-semibold text-gray-800 truncate">
                   {email}
                 </p>
               </div>
