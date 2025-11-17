@@ -215,9 +215,11 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
 
       <div className="flex-1">
         {event.description && (
-          <p className="text-gray-700 text-base leading-relaxed text-justify">
-            {event.description}
-          </p>
+          <div className="max-h-48 overflow-y-auto rounded-lg border border-gray-200 p-4 bg-gray-50/50">
+            <p className="text-gray-700 text-base leading-relaxed text-justify whitespace-pre-wrap">
+              {event.description}
+            </p>
+          </div>
         )}
       </div>
 
