@@ -81,7 +81,10 @@ export function useUsers(): UseUsersReturn {
         .maybeSingle();
 
       if (fetchError) {
-        console.error("[useUsers] Error fetching user from database:", fetchError);
+        console.error(
+          "[useUsers] Error fetching user from database:",
+          fetchError
+        );
         return null;
       }
 

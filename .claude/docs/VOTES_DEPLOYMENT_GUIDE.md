@@ -72,6 +72,7 @@ WHERE tablename = 'votes';
 ```
 
 Vous devriez voir **7 policies** :
+
 1. Anyone can view votes (SELECT)
 2. Users can create their own vote (INSERT)
 3. Admins can create any vote (INSERT)
@@ -194,6 +195,7 @@ VALUES ('event-id', 'user-id', 'no');
 **Cause :** L'utilisateur authentifié n'existe pas dans la table `users`.
 
 **Solution :**
+
 ```sql
 -- Vérifier si l'utilisateur existe
 SELECT * FROM auth.users WHERE id = 'auth-user-id';
@@ -206,11 +208,13 @@ VALUES ('auth-user-id', 'email@exemple.com', 'Nom Utilisateur', 'member');
 ### Problème 2 : Section "Participations" ne s'affiche pas
 
 **Causes possibles :**
+
 1. L'utilisateur n'est pas connecté
 2. La migration n'a pas été appliquée
 3. Erreur JavaScript dans la console
 
 **Solution :**
+
 1. Vérifier la console navigateur (F12) pour les erreurs
 2. Vérifier que `getCurrentUser()` retourne un utilisateur valide
 3. Vérifier que la table `votes` existe
@@ -220,6 +224,7 @@ VALUES ('auth-user-id', 'email@exemple.com', 'Nom Utilisateur', 'member');
 **Cause :** RLS policies mal configurées
 
 **Solution :**
+
 ```sql
 -- Vérifier les policies
 SELECT * FROM pg_policies WHERE tablename = 'votes';
@@ -232,6 +237,7 @@ SELECT * FROM pg_policies WHERE tablename = 'votes';
 **Cause :** L'utilisateur n'a pas le rôle 'admin'
 
 **Solution :**
+
 ```sql
 -- Vérifier le rôle
 SELECT id, name, role FROM users WHERE email = 'votre-email@exemple.com';

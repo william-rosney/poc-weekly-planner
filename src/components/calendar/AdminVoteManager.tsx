@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { VoteWithUser } from "@/hooks/useVotes";
 import {
-  VOTE_STATUS_LABELS,
   VOTE_STATUS_SHORT_LABELS,
   VOTE_STATUS_COLORS,
   VoteStatus,

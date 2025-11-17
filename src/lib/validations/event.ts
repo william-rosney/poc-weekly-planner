@@ -26,10 +26,7 @@ export const eventFormSchema = z
       .max(1440, "Le temps de trajet ne peut pas dépasser 24 heures")
       .optional()
       .or(z.nan()),
-    cost_per_person: z
-      .number()
-      .optional()
-      .or(z.nan()),
+    cost_per_person: z.number().optional().or(z.nan()),
     color: z
       .string()
       .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Couleur invalide")
