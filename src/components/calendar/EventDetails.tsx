@@ -13,6 +13,7 @@ import {
   Copy,
   CopyCheck,
   Users,
+  Edit2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -36,6 +37,7 @@ interface EventDetailsProps {
  */
 export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
   const [copiedPlace, setCopiedPlace] = useState(false);
+  const [isEditingVote, setIsEditingVote] = useState(false);
 
   // Hooks pour gérer les votes
   const {
@@ -88,6 +90,8 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     if (result.success) {
       // Rafraîchir les votes après soumission
       await getVotesForEvent(event.id);
+      // Fermer le mode édition après avoir voté
+      setIsEditingVote(false);
     } else {
       console.error("Failed to submit vote:", result.error);
     }
@@ -323,11 +327,41 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
             {/* Sélecteur de vote pour l'utilisateur courant */}
             {userLoaded && currentUser && (
               <div className="pt-4 border-t border-indigo-200">
-                <VoteSelector
-                  currentVote={currentUserVote}
-                  onVote={handleVote}
-                  loading={votesLoading}
-                />
+                {/* Si l'utilisateur n'a pas encore voté, afficher directement le sélecteur */}
+                {!currentUserVote && (
+                  <VoteSelector
+                    currentVote={currentUserVote}
+                    onVote={handleVote}
+                    loading={votesLoading}
+                  />
+                )}
+
+                {/* Si l'utilisateur a déjà voté */}
+                {currentUserVote && (
+                  <>
+                    {/* Afficher le bouton modifier si pas en mode édition */}
+                    {!isEditingVote && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditingVote(true)}
+                        className="gap-2 w-full sm:w-auto"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                        Modifier ma participation
+                      </Button>
+                    )}
+
+                    {/* Afficher le sélecteur si en mode édition */}
+                    {isEditingVote && (
+                      <VoteSelector
+                        currentVote={currentUserVote}
+                        onVote={handleVote}
+                        loading={votesLoading}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             )}
 
