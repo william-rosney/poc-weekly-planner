@@ -46,8 +46,8 @@ export function VoteSelector({
   };
 
   return (
-    <div className="space-y-3">
-      <div className="font-semibold text-gray-900">Votre participation</div>
+    <div className="space-y-4">
+      <div className="font-medium text-gray-900 text-sm">Votre participation</div>
 
       {loading && (
         <div className="flex items-center justify-center py-4">

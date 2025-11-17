@@ -310,11 +310,13 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         )}
 
         {/* Participations */}
-        <div className="flex items-start gap-3 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-          <Users className="h-5 w-5 text-indigo-600 mt-0.5 shrink-0" />
-          <div className="flex-1 space-y-4">
+        <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+          <div className="flex items-center gap-3 mb-4">
+            <Users className="h-5 w-5 text-indigo-600 shrink-0" />
             <div className="font-semibold text-gray-900">Participations</div>
+          </div>
 
+          <div className="space-y-4">
             {/* Affichage des listes de participants */}
             <VoteListsDisplay groupedVotes={groupedVotes} stats={stats} />
 
