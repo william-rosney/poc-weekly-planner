@@ -16,7 +16,7 @@ import {
   VOTE_STATUS_COLORS,
   VoteStatus,
 } from "@/lib/validations/vote";
-import { Settings, Save, X, Loader2 } from "lucide-react";
+import { UserCog, Save, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface User {
@@ -108,50 +108,46 @@ export function AdminVoteManager({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Settings className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-gray-900">
-            Gestion des participations (Admin)
-          </h3>
-        </div>
-
         {!isEditing && (
           <Button
             variant="outline"
             size="sm"
             onClick={handleStartEditing}
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto"
           >
-            <Settings className="h-4 w-4" />
-            Modifier
+            <UserCog className="h-4 w-4" />
+            <span className="hidden sm:inline">Gérer les participants</span>
+            <span className="sm:hidden">Gérer</span>
           </Button>
         )}
 
         {isEditing && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={handleCancelEditing}
               disabled={saving}
-              className="gap-2"
+              className="flex-1 sm:flex-none"
+              title="Annuler"
             >
               <X className="h-4 w-4" />
-              Annuler
+              <span className="hidden sm:inline ml-2">Annuler</span>
             </Button>
             <Button
               variant="default"
               size="sm"
               onClick={handleSave}
               disabled={saving}
-              className="gap-2"
+              className="flex-1 sm:flex-none"
+              title="Enregistrer"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              Enregistrer
+              <span className="hidden sm:inline ml-2">Enregistrer</span>
             </Button>
           </div>
         )}
@@ -173,7 +169,7 @@ export function AdminVoteManager({
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between gap-4 p-3 bg-white rounded-lg border border-gray-200"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-white rounded-lg border border-gray-200"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {user.avatar_url && (
@@ -183,7 +179,7 @@ export function AdminVoteManager({
                           className="h-8 w-8 rounded-full object-cover shrink-0"
                         />
                       )}
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="font-medium text-gray-900 truncate">
                           {user.name}
                         </div>
@@ -200,7 +196,7 @@ export function AdminVoteManager({
                       }
                       disabled={saving}
                     >
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Aucun vote" />
                       </SelectTrigger>
                       <SelectContent>
