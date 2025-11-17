@@ -12,10 +12,18 @@ import {
   MapPin,
   Copy,
   CopyCheck,
+  Users,
+  Edit2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useVotes } from "@/hooks/useVotes";
+import { useUsers } from "@/hooks/useUsers";
+import { VoteListsDisplay } from "./VoteListsDisplay";
+import { VoteSelector } from "./VoteSelector";
+import { AdminVoteManager } from "./AdminVoteManager";
+import { VoteStatus } from "@/lib/validations/vote";
 
 interface EventDetailsProps {
   event: Event;
@@ -29,6 +37,85 @@ interface EventDetailsProps {
  */
 export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
   const [copiedPlace, setCopiedPlace] = useState(false);
+  const [isEditingVote, setIsEditingVote] = useState(false);
+
+  // Hooks pour gérer les votes
+  const {
+    groupedVotes,
+    stats,
+    loading: votesLoading,
+    getVotesForEvent,
+    submitVote,
+    deleteVote,
+    getUserVote,
+  } = useVotes();
+
+  const { users, getCurrentUser } = useUsers();
+  const [currentUser, setCurrentUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    avatar_url: string | null;
+    role: string;
+  } | null>(null);
+  const [userLoaded, setUserLoaded] = useState(false);
+
+  // Charger les votes et l'utilisateur courant au montage
+  useEffect(() => {
+    if (event.id) {
+      getVotesForEvent(event.id);
+    }
+
+    getCurrentUser()
+      .then((user) => {
+        setCurrentUser(user);
+        setUserLoaded(true);
+      })
+      .catch((error: unknown) => {
+        console.error("[EventDetails] Error loading current user:", error);
+        setUserLoaded(true);
+      });
+  }, [event.id, getVotesForEvent, getCurrentUser]);
+
+  // Récupérer le vote de l'utilisateur courant
+  const currentUserVote = currentUser
+    ? getUserVote(event.id, currentUser.id)
+    : null;
+
+  // Gérer le vote de l'utilisateur
+  const handleVote = async (status: VoteStatus) => {
+    if (!currentUser) return;
+
+    const result = await submitVote(event.id, currentUser.id, status);
+    if (result.success) {
+      // Rafraîchir les votes après soumission
+      await getVotesForEvent(event.id);
+      // Fermer le mode édition après avoir voté
+      setIsEditingVote(false);
+    } else {
+      console.error("Failed to submit vote:", result.error);
+    }
+  };
+
+  // Gérer la mise à jour des votes par l'admin
+  const handleAdminUpdateVote = async (
+    userId: string,
+    status: VoteStatus | null
+  ) => {
+    if (status === null) {
+      // Supprimer le vote
+      const result = await deleteVote(event.id, userId);
+      if (result.success) {
+        await getVotesForEvent(event.id);
+      }
+    } else {
+      // Créer ou mettre à jour le vote
+      const result = await submitVote(event.id, userId, status);
+      if (result.success) {
+        await getVotesForEvent(event.id);
+      }
+    }
+  };
 
   const startDate = new Date(event.start_time);
   const endDate = new Date(event.end_time);
@@ -225,6 +312,92 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
             </div>
           </div>
         )}
+
+        {/* Participations */}
+        <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+          <div className="flex items-center gap-3 mb-4">
+            <Users className="h-5 w-5 text-indigo-600 shrink-0" />
+            <div className="font-semibold text-gray-900">Participations</div>
+          </div>
+
+          <div className="space-y-4">
+            {/* Affichage des listes de participants */}
+            <VoteListsDisplay groupedVotes={groupedVotes} stats={stats} />
+
+            {/* Sélecteur de vote pour l'utilisateur courant */}
+            {userLoaded && currentUser && (
+              <div className="pt-4 border-t border-indigo-200">
+                {/* Si l'utilisateur n'a pas encore voté, afficher directement le sélecteur */}
+                {!currentUserVote && (
+                  <VoteSelector
+                    currentVote={currentUserVote}
+                    onVote={handleVote}
+                    loading={votesLoading}
+                  />
+                )}
+
+                {/* Si l'utilisateur a déjà voté */}
+                {currentUserVote && (
+                  <>
+                    {/* Afficher le bouton modifier si pas en mode édition */}
+                    {!isEditingVote && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditingVote(true)}
+                        className="gap-2 w-full sm:w-auto"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                        Modifier ma participation
+                      </Button>
+                    )}
+
+                    {/* Afficher le sélecteur si en mode édition */}
+                    {isEditingVote && (
+                      <VoteSelector
+                        currentVote={currentUserVote}
+                        onVote={handleVote}
+                        loading={votesLoading}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Message d'erreur si l'utilisateur n'est pas trouvé */}
+            {userLoaded && !currentUser && (
+              <div className="pt-4 border-t border-indigo-200">
+                <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    Impossible de charger votre profil utilisateur. Veuillez vous reconnecter ou contacter un administrateur.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* État de chargement */}
+            {!userLoaded && (
+              <div className="pt-4 border-t border-indigo-200">
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin h-5 w-5 border-2 border-indigo-600 border-t-transparent rounded-full"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Interface de gestion admin */}
+            {currentUser && currentUser.role === "admin" && (
+              <div className="pt-4 border-t border-indigo-200">
+                <AdminVoteManager
+                  users={users}
+                  votes={[...groupedVotes.yes, ...groupedVotes.no, ...groupedVotes.maybe]}
+                  onUpdateVote={handleAdminUpdateVote}
+                  isAdmin={currentUser.role === "admin"}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
