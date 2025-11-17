@@ -142,6 +142,7 @@ Permettre aux membres de voter sur leur participation à chaque événement avec
 ### ✅ Livrable
 
 Un calendrier interactif où :
+
 - Chaque membre peut voter sur les événements (Oui / Non / Peut-être)
 - Les listes de participants sont visibles par tous avec noms et avatars
 - Les admins peuvent modifier les votes de tous les utilisateurs
@@ -154,16 +155,20 @@ Voir [VOTES_DEPLOYMENT_GUIDE.md](./.claude/docs/VOTES_DEPLOYMENT_GUIDE.md) pour 
 ### 📦 Fichiers Créés/Modifiés
 
 **Migration SQL :**
+
 - `supabase/migrations/009_create_votes_table.sql`
 
 **Hooks :**
+
 - `src/hooks/useVotes.ts` (nouveau)
 - `src/hooks/useUsers.ts` (nouveau)
 
 **Validation :**
+
 - `src/lib/validations/vote.ts` (nouveau)
 
 **Composants :**
+
 - `src/components/calendar/VoteListsDisplay.tsx` (nouveau)
 - `src/components/calendar/VoteSelector.tsx` (nouveau)
 - `src/components/calendar/AdminVoteManager.tsx` (nouveau)
@@ -251,17 +256,17 @@ Une version hébergée, accessible à tous les membres de la famille.
 
 ## 🧭 Résumé visuel des étapes
 
-| Étape | Nom            | Statut       | Objectif principal                            |
-| ----- | -------------- | ------------ | --------------------------------------------- |
-| 0     | Initialisation | ✅ Terminée  | Setup du projet Next.js + Tailwind + Supabase |
-| 1     | Auth           | ✅ Terminée  | Magic Link + Sélecteur d'utilisateur          |
-| 2     | Calendrier     | ✅ Terminée  | Vue hebdo avec FullCalendar                   |
-| 3     | CRUD           | ✅ Terminée  | Gestion complète des événements               |
-| 4     | Votes          | ⏳ En cours  | Système de participation avec listes détaillées |
-| 5     | UX             | ⏳ À faire   | Animations + UI responsive                    |
-| 6     | Realtime       | ⏳ À faire   | Synchronisation en direct                     |
-| 7     | Finalisation   | ⏳ À faire   | Tests + nettoyage                             |
-| 8     | Hébergement    | ⏳ À faire   | Déploiement sur Vercel                        |
+| Étape | Nom            | Statut      | Objectif principal                              |
+| ----- | -------------- | ----------- | ----------------------------------------------- |
+| 0     | Initialisation | ✅ Terminée | Setup du projet Next.js + Tailwind + Supabase   |
+| 1     | Auth           | ✅ Terminée | Magic Link + Sélecteur d'utilisateur            |
+| 2     | Calendrier     | ✅ Terminée | Vue hebdo avec FullCalendar                     |
+| 3     | CRUD           | ✅ Terminée | Gestion complète des événements                 |
+| 4     | Votes          | ⏳ En cours | Système de participation avec listes détaillées |
+| 5     | UX             | ⏳ À faire  | Animations + UI responsive                      |
+| 6     | Realtime       | ⏳ À faire  | Synchronisation en direct                       |
+| 7     | Finalisation   | ⏳ À faire  | Tests + nettoyage                               |
+| 8     | Hébergement    | ⏳ À faire  | Déploiement sur Vercel                          |
 
 ---
 

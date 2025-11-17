@@ -13,17 +13,25 @@ import {
   Copy,
   CopyCheck,
   Users,
-  Edit2,
+  Car,
+  ChevronDown,
+  ChevronUp,
+  User,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useVotes } from "@/hooks/useVotes";
 import { useUsers } from "@/hooks/useUsers";
 import { VoteListsDisplay } from "./VoteListsDisplay";
 import { VoteSelector } from "./VoteSelector";
 import { AdminVoteManager } from "./AdminVoteManager";
-import { VoteStatus } from "@/lib/validations/vote";
+import {
+  VoteStatus,
+  VOTE_STATUS_LABELS,
+  VOTE_STATUS_COLORS,
+} from "@/lib/validations/vote";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface EventDetailsProps {
   event: Event;
@@ -38,6 +46,7 @@ interface EventDetailsProps {
 export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
   const [copiedPlace, setCopiedPlace] = useState(false);
   const [isEditingVote, setIsEditingVote] = useState(false);
+  const myParticipationRef = useRef<HTMLDivElement>(null);
 
   // Hooks pour gérer les votes
   const {
@@ -81,6 +90,19 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
   const currentUserVote = currentUser
     ? getUserVote(event.id, currentUser.id)
     : null;
+
+  // Scroll automatique quand la section "Ma participation" s'ouvre
+  useEffect(() => {
+    if (isEditingVote && myParticipationRef.current) {
+      // Délai pour laisser l'animation s'ouvrir complètement
+      setTimeout(() => {
+        myParticipationRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 300);
+    }
+  }, [isEditingVote]);
 
   // Gérer le vote de l'utilisateur
   const handleVote = async (status: VoteStatus) => {
@@ -146,6 +168,21 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     return `${hours}h${minutes.toString().padStart(2, "0")}`;
   };
 
+  const formatTravelTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours === 0) {
+      return `${remainingMinutes}min`;
+    }
+
+    if (remainingMinutes === 0) {
+      return `${hours}h`;
+    }
+
+    return `${hours}h${remainingMinutes.toString().padStart(2, "0")}`;
+  };
+
   const isUrl = (text: string) => {
     try {
       new URL(text);
@@ -199,9 +236,11 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
 
       <div className="flex-1">
         {event.description && (
-          <p className="text-gray-700 text-base leading-relaxed text-justify">
-            {event.description}
-          </p>
+          <div className="max-h-48 overflow-y-auto rounded-lg border border-gray-200 p-4 bg-gray-50/50">
+            <p className="text-gray-700 text-base leading-relaxed text-justify whitespace-pre-wrap">
+              {event.description}
+            </p>
+          </div>
         )}
       </div>
 
@@ -228,17 +267,13 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
         </div>
 
         {/* Coût par personne */}
-        {
-          event.cost_per_person != null && event.cost_per_person === 0 && (
-            <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+        {event.cost_per_person != null && event.cost_per_person === 0 && (
+          <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
             <div className="flex-1">
-              <div className="text-lg font-bold text-green-600">
-                Gratuit
-              </div>
+              <div className="text-lg font-bold text-green-600">Gratuit</div>
             </div>
           </div>
-          )
-        }
+        )}
 
         {event.cost_per_person != null && event.cost_per_person > 0 && (
           <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
@@ -275,40 +310,57 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
           </div>
         )}
 
-        {/* Lieu */}
-        {event.place && (
+        {/* Lieu et Temps de trajet */}
+        {(event.place ||
+          (event.travel_time_minutes != null &&
+            event.travel_time_minutes > 0)) && (
           <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
             <MapPin className="h-5 w-5 text-purple-600 mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="font-semibold text-gray-900">Lieu</div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={copyPlaceToClipboard}
-                  className="h-7 w-7 hover:bg-purple-100"
-                  title="Copier le lieu"
-                >
-                  {copiedPlace ? (
-                    <CopyCheck className="h-4 w-4 text-green-600" />
+              {event.place ? (
+                <>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="font-semibold text-gray-900">Lieu</div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={copyPlaceToClipboard}
+                      className="h-7 w-7 hover:bg-purple-100"
+                      title="Copier le lieu"
+                    >
+                      {copiedPlace ? (
+                        <CopyCheck className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <Copy className="h-4 w-4 text-purple-600" />
+                      )}
+                    </Button>
+                  </div>
+                  {isUrl(event.place) ? (
+                    <a
+                      href={event.place}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm mb-2"
+                    >
+                      <span className="truncate min-w-0">{event.place}</span>
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
                   ) : (
-                    <Copy className="h-4 w-4 text-purple-600" />
+                    <p className="text-sm text-gray-700 mb-2">{event.place}</p>
                   )}
-                </Button>
-              </div>
-              {isUrl(event.place) ? (
-                <a
-                  href={event.place}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:underline text-sm"
-                >
-                  <span className="truncate min-w-0">{event.place}</span>
-                  <ExternalLink className="h-3 w-3 shrink-0" />
-                </a>
+                </>
               ) : (
-                <p className="text-sm text-gray-700">{event.place}</p>
+                <div className="font-semibold text-gray-900 mb-2">
+                  Temps de trajet
+                </div>
               )}
+              {event.travel_time_minutes != null &&
+                event.travel_time_minutes > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <Car className="h-3.5 w-3.5" />
+                    <span>{formatTravelTime(event.travel_time_minutes)}</span>
+                  </div>
+                )}
             </div>
           </div>
         )}
@@ -338,29 +390,57 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
 
                 {/* Si l'utilisateur a déjà voté */}
                 {currentUserVote && (
-                  <>
-                    {/* Afficher le bouton modifier si pas en mode édition */}
-                    {!isEditingVote && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsEditingVote(true)}
-                        className="gap-2 w-full sm:w-auto"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                        Modifier ma participation
-                      </Button>
-                    )}
+                  <div
+                    ref={myParticipationRef}
+                    className={`rounded-lg border ${VOTE_STATUS_COLORS[currentUserVote.status].bg} ${VOTE_STATUS_COLORS[currentUserVote.status].border} overflow-hidden`}
+                  >
+                    {/* Header - Always visible, clickable */}
+                    <button
+                      onClick={() => setIsEditingVote(!isEditingVote)}
+                      className={`w-full flex items-center justify-between p-4 ${VOTE_STATUS_COLORS[currentUserVote.status].hover} transition-colors`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <User
+                          className={`h-5 w-5 shrink-0 ${VOTE_STATUS_COLORS[currentUserVote.status].text}`}
+                        />
+                        <div className="font-semibold text-gray-900">
+                          Ma participation
+                        </div>
+                      </div>
 
-                    {/* Afficher le sélecteur si en mode édition */}
-                    {isEditingVote && (
-                      <VoteSelector
-                        currentVote={currentUserVote}
-                        onVote={handleVote}
-                        loading={votesLoading}
-                      />
-                    )}
-                  </>
+                      {/* Chevron icon */}
+                      {isEditingVote ? (
+                        <ChevronUp
+                          className={`h-5 w-5 ${VOTE_STATUS_COLORS[currentUserVote.status].text}`}
+                        />
+                      ) : (
+                        <ChevronDown
+                          className={`h-5 w-5 ${VOTE_STATUS_COLORS[currentUserVote.status].text}`}
+                        />
+                      )}
+                    </button>
+
+                    {/* Expanded content - VoteSelector */}
+                    <AnimatePresence>
+                      {isEditingVote && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-4 pt-2 border-t border-gray-200">
+                            <VoteSelector
+                              currentVote={currentUserVote}
+                              onVote={handleVote}
+                              loading={votesLoading}
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 )}
               </div>
             )}
@@ -370,7 +450,8 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
               <div className="pt-4 border-t border-indigo-200">
                 <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                   <p className="text-sm text-yellow-800">
-                    Impossible de charger votre profil utilisateur. Veuillez vous reconnecter ou contacter un administrateur.
+                    Impossible de charger votre profil utilisateur. Veuillez
+                    vous reconnecter ou contacter un administrateur.
                   </p>
                 </div>
               </div>
@@ -390,7 +471,11 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
               <div className="pt-4 border-t border-indigo-200">
                 <AdminVoteManager
                   users={users}
-                  votes={[...groupedVotes.yes, ...groupedVotes.no, ...groupedVotes.maybe]}
+                  votes={[
+                    ...groupedVotes.yes,
+                    ...groupedVotes.no,
+                    ...groupedVotes.maybe,
+                  ]}
                   onUpdateVote={handleAdminUpdateVote}
                   isAdmin={currentUser.role === "admin"}
                 />

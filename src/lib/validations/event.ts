@@ -19,10 +19,14 @@ export const eventFormSchema = z
       .max(255, "Le lieu ne peut pas dépasser 255 caractères")
       .optional()
       .or(z.literal("")),
-    cost_per_person: z
+    travel_time_minutes: z
       .number()
+      .int("Le temps de trajet doit être un nombre entier")
+      .min(0, "Le temps de trajet ne peut pas être négatif")
+      .max(1440, "Le temps de trajet ne peut pas dépasser 24 heures")
       .optional()
       .or(z.nan()),
+    cost_per_person: z.number().optional().or(z.nan()),
     color: z
       .string()
       .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Couleur invalide")

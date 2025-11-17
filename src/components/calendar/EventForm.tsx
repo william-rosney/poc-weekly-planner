@@ -65,6 +65,7 @@ export function EventForm({
       description: defaultValues?.description || "",
       link: defaultValues?.link || "",
       place: defaultValues?.place || "",
+      travel_time_minutes: defaultValues?.travel_time_minutes || undefined,
       cost_per_person: defaultValues?.cost_per_person || undefined,
       color: defaultValues?.color || DEFAULT_EVENT_COLOR,
       user_id: defaultValues?.user_id || "",
@@ -320,6 +321,76 @@ export function EventForm({
             </FormItem>
           )}
         />
+
+        {/* Temps de trajet */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Temps de trajet
+          </label>
+          <FormField
+            control={form.control}
+            name="travel_time_minutes"
+            render={({ field }) => {
+              const hours = field.value ? Math.floor(field.value / 60) : 0;
+              const minutes = field.value ? field.value % 60 : 0;
+
+              return (
+                <FormItem>
+                  <div className="flex gap-4 max-w-xs">
+                    <FormControl>
+                      <div className="relative w-24">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="23"
+                          placeholder="0"
+                          value={hours || ""}
+                          onChange={(e) => {
+                            const newHours = e.target.value
+                              ? parseInt(e.target.value, 10)
+                              : 0;
+                            const newTotal = newHours * 60 + minutes;
+                            field.onChange(newTotal > 0 ? newTotal : undefined);
+                          }}
+                          disabled={isLoading}
+                          className="pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                          h
+                        </span>
+                      </div>
+                    </FormControl>
+                    <FormControl>
+                      <div className="relative w-24">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="59"
+                          step="1"
+                          placeholder="0"
+                          value={minutes || ""}
+                          onChange={(e) => {
+                            const newMinutes = e.target.value
+                              ? parseInt(e.target.value, 10)
+                              : 0;
+                            const newTotal = hours * 60 + newMinutes;
+                            field.onChange(newTotal > 0 ? newTotal : undefined);
+                          }}
+                          disabled={isLoading}
+                          className="pr-10"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                          min
+                        </span>
+                      </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        </div>
 
         {/* Coût par personne */}
         <FormField

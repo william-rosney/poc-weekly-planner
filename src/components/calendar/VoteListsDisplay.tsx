@@ -7,7 +7,14 @@ import {
   VOTE_STATUS_COLORS,
   VoteStatus,
 } from "@/lib/validations/vote";
-import { CheckCircle, XCircle, HelpCircle, Users, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  HelpCircle,
+  Users,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface VoteListsDisplayProps {
@@ -24,7 +31,9 @@ export function VoteListsDisplay({
   groupedVotes,
   stats,
 }: VoteListsDisplayProps) {
-  const [expandedSections, setExpandedSections] = useState<Set<VoteStatus>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<VoteStatus>>(
+    new Set()
+  );
 
   // Ne rien afficher si aucun vote
   if (stats.total === 0) {
