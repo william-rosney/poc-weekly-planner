@@ -21,6 +21,7 @@ export interface Event {
   user_id: string;
   link?: string;
   place?: string;
+  travel_time_minutes?: number;
   cost_per_person?: number;
   color?: string;
   created_at: string;

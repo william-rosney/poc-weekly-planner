@@ -14,6 +14,7 @@ import {
   CopyCheck,
   Users,
   Edit2,
+  Car,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -144,6 +145,21 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     }
 
     return `${hours}h${minutes.toString().padStart(2, "0")}`;
+  };
+
+  const formatTravelTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours === 0) {
+      return `${remainingMinutes}min`;
+    }
+
+    if (remainingMinutes === 0) {
+      return `${hours}h`;
+    }
+
+    return `${hours}h${remainingMinutes.toString().padStart(2, "0")}`;
   };
 
   const isUrl = (text: string) => {
@@ -312,6 +328,22 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
             </div>
           </div>
         )}
+
+        {/* Temps de trajet */}
+        {event.travel_time_minutes != null &&
+          event.travel_time_minutes > 0 && (
+            <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
+              <Car className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900 mb-1">
+                  Temps de trajet
+                </div>
+                <div className="text-lg font-bold text-amber-600">
+                  {formatTravelTime(event.travel_time_minutes)}
+                </div>
+              </div>
+            </div>
+          )}
 
         {/* Participations */}
         <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">

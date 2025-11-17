@@ -92,6 +92,7 @@ export function EventFormDrawer({
         description: event.description || "",
         link: event.link || "",
         place: event.place || "",
+        travel_time_minutes: event.travel_time_minutes || undefined,
         cost_per_person: event.cost_per_person || undefined,
         color: event.color || undefined,
         user_id: event.user_id,

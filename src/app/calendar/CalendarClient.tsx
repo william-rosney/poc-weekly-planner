@@ -96,6 +96,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
             description: values.description,
             link: values.link,
             place: values.place,
+            travel_time_minutes: values.travel_time_minutes,
             cost_per_person: values.cost_per_person,
             color: values.color,
           }
@@ -114,6 +115,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
           description: values.description,
           link: values.link,
           place: values.place,
+          travel_time_minutes: values.travel_time_minutes,
           cost_per_person: values.cost_per_person,
           color: values.color,
           user_id: values.user_id,
