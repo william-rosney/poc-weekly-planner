@@ -71,7 +71,7 @@ export function VoteSelector({
               >
                 <Button
                   type="button"
-                  variant={isSelected ? "default" : "outline"}
+                  variant="outline"
                   onClick={() => handleVoteClick(status)}
                   disabled={disabled}
                   className={`
@@ -79,7 +79,7 @@ export function VoteSelector({
                     transition-all duration-200
                     ${
                       isSelected
-                        ? `${colors.bg} ${colors.text} ${colors.border} border-2 shadow-md`
+                        ? `${colors.bg} ${colors.text} ${colors.border} ${colors.hover} border-2 shadow-md`
                         : `bg-white border-gray-200 hover:${colors.bg} hover:${colors.border}`
                     }
                     ${disabled ? "opacity-50 cursor-not-allowed" : ""}

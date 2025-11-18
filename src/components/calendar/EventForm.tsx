@@ -12,6 +12,7 @@ import {
   DEFAULT_EVENT_COLOR,
 } from "@/lib/validations/event";
 import { Button } from "@/components/ui/button";
+import { CostInput } from "@/components/ui/CostInput";
 import {
   Form,
   FormControl,
@@ -398,18 +399,13 @@ export function EventForm({
           name="cost_per_person"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Coût par personne (€)</FormLabel>
+              <FormLabel>Coût par personne (CAD)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  {...field}
-                  value={field.value || ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    field.onChange(value ? parseFloat(value) : undefined);
-                  }}
+                <CostInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
                   disabled={isLoading}
                 />
               </FormControl>
