@@ -121,49 +121,59 @@ export function UserSelector({
           {users
             .filter((user) => user.email)
             .map((user, index) => (
-            <motion.div
-              key={user.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 0.15,
-                delay: index * 0.03, // Délai très court pour apparition quasi instantanée
-                ease: "easeOut",
-              }}
-            >
-              <Card
-                className="cursor-pointer transition-shadow duration-150 ease-out hover:shadow-xl border-secondary/30 hover:border-secondary"
-                onClick={() => onSelectUser(user.email, user.name)}
+              <motion.div
+                key={user.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 0.15,
+                  delay: index * 0.03, // Délai très court pour apparition quasi instantanée
+                  ease: "easeOut",
+                }}
               >
-                <CardContent className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4">
-                  {/* Avatar avec bordure festive */}
-                  <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-secondary shadow-md shrink-0">
-                    <AvatarFallback className="bg-linear-to-br from-primary/20 to-chart-2/20 text-primary font-bold text-sm sm:text-lg">
-                      {getInitials(user.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                <Card
+                  className="cursor-pointer transition-shadow duration-150 ease-out hover:shadow-xl border-secondary/30 hover:border-secondary"
+                  onClick={() => onSelectUser(user.email, user.name)}
+                >
+                  <CardContent className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4">
+                    {/* Avatar avec bordure festive */}
+                    <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-secondary shadow-md shrink-0">
+                      <AvatarFallback className="bg-linear-to-br from-primary/20 to-chart-2/20 text-primary font-bold text-sm sm:text-lg">
+                        {getInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  {/* Info utilisateur */}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{user.name}</p>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">{user.email}</p>
-                  </div>
+                    {/* Info utilisateur */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">
+                        {user.email}
+                      </p>
+                    </div>
 
-                  {/* Icône selon le rôle - Administrateur ou Membre */}
-                  {user.role === "admin" ? (
-                    <span className="text-xl sm:text-2xl shrink-0" title="Administrateur">
-                      👑
-                    </span>
-                  ) : (
-                    <span className="text-xl sm:text-2xl shrink-0" title="Membre">
-                      ✨
-                    </span>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                    {/* Icône selon le rôle - Administrateur ou Membre */}
+                    {user.role === "admin" ? (
+                      <span
+                        className="text-xl sm:text-2xl shrink-0"
+                        title="Administrateur"
+                      >
+                        👑
+                      </span>
+                    ) : (
+                      <span
+                        className="text-xl sm:text-2xl shrink-0"
+                        title="Membre"
+                      >
+                        ✨
+                      </span>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
         </AnimatePresence>
       </div>
     </div>

@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Event } from "@/lib/types";
+import { Event, User } from "@/lib/types";
+import { canEditEvent } from "@/lib/utils";
 
 interface UseEventsReturn {
   events: Event[];
@@ -108,6 +109,44 @@ export function useEvents(): UseEventsReturn {
       updates: Partial<Omit<Event, "id" | "created_at" | "updated_at">>
     ): Promise<{ success: boolean; error: string | null }> => {
       try {
+        // Get current user for permission check
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
+        if (!authUser) {
+          return { success: false, error: "Non authentifié" };
+        }
+
+        // Get current user's full profile
+        const { data: currentUserData } = await supabase
+          .from("users")
+          .select("id, name, email, avatar_url, role, created_at, updated_at")
+          .eq("auth_id", authUser.id)
+          .maybeSingle();
+
+        if (!currentUserData) {
+          return { success: false, error: "Utilisateur non trouvé" };
+        }
+
+        const currentUser = currentUserData as User;
+
+        // Get the event to check permissions
+        const { data: existingEvent } = await supabase
+          .from("events")
+          .select("user_id")
+          .eq("id", id)
+          .single();
+
+        if (!existingEvent) {
+          return { success: false, error: "Événement non trouvé" };
+        }
+
+        // Check permissions
+        if (!canEditEvent(existingEvent.user_id, currentUser)) {
+          return { success: false, error: "Permission refusée" };
+        }
+
+        // Perform the update
         const { data, error: updateError } = await supabase
           .from("events")
           .update(updates)
@@ -143,6 +182,44 @@ export function useEvents(): UseEventsReturn {
   const deleteEvent = useCallback(
     async (id: string): Promise<{ success: boolean; error: string | null }> => {
       try {
+        // Get current user for permission check
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
+        if (!authUser) {
+          return { success: false, error: "Non authentifié" };
+        }
+
+        // Get current user's full profile
+        const { data: currentUserData } = await supabase
+          .from("users")
+          .select("id, name, email, avatar_url, role, created_at, updated_at")
+          .eq("auth_id", authUser.id)
+          .maybeSingle();
+
+        if (!currentUserData) {
+          return { success: false, error: "Utilisateur non trouvé" };
+        }
+
+        const currentUser = currentUserData as User;
+
+        // Get the event to check permissions
+        const { data: existingEvent } = await supabase
+          .from("events")
+          .select("user_id")
+          .eq("id", id)
+          .single();
+
+        if (!existingEvent) {
+          return { success: false, error: "Événement non trouvé" };
+        }
+
+        // Check permissions
+        if (!canEditEvent(existingEvent.user_id, currentUser)) {
+          return { success: false, error: "Permission refusée" };
+        }
+
+        // Perform the delete
         const { error: deleteError } = await supabase
           .from("events")
           .delete()

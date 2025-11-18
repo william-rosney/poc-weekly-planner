@@ -76,7 +76,7 @@ export function useUsers(): UseUsersReturn {
 
       const { data, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, avatar_url, role")
+        .select("id, name, email, avatar_url, role, created_at, updated_at")
         .eq("auth_id", authUser.id)
         .maybeSingle();
 

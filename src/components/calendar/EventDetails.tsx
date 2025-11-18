@@ -1,7 +1,8 @@
 "use client";
 
-import { Event } from "@/lib/types";
+import { Event, User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { canEditEvent } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -16,7 +17,7 @@ import {
   Car,
   ChevronDown,
   ChevronUp,
-  User,
+  User as UserIcon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -26,11 +27,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { VoteListsDisplay } from "./VoteListsDisplay";
 import { VoteSelector } from "./VoteSelector";
 import { AdminVoteManager } from "./AdminVoteManager";
-import {
-  VoteStatus,
-  VOTE_STATUS_LABELS,
-  VOTE_STATUS_COLORS,
-} from "@/lib/validations/vote";
+import { VoteStatus, VOTE_STATUS_COLORS } from "@/lib/validations/vote";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface EventDetailsProps {
@@ -60,13 +57,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
   } = useVotes();
 
   const { users, getCurrentUser } = useUsers();
-  const [currentUser, setCurrentUser] = useState<{
-    id: string;
-    name: string;
-    email: string;
-    avatar_url: string | null;
-    role: string;
-  } | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userLoaded, setUserLoaded] = useState(false);
 
   // Charger les votes et l'utilisateur courant au montage
@@ -77,7 +68,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
 
     getCurrentUser()
       .then((user) => {
-        setCurrentUser(user);
+        setCurrentUser(user as User);
         setUserLoaded(true);
       })
       .catch((error: unknown) => {
@@ -212,24 +203,27 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
           </h2>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            className="h-9 w-9 hover:bg-background/50"
-          >
-            <Edit className="h-4 w-4 text-primary" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onDelete}
-            className="h-9 w-9 hover:bg-red-50"
-          >
-            <Trash2 className="h-4 w-4 text-red-600" />
-          </Button>
-        </div>
+        {/* Show edit/delete buttons only if user has permission */}
+        {currentUser && canEditEvent(event.user_id, currentUser as User) && (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-9 w-9 hover:bg-background/50"
+            >
+              <Edit className="h-4 w-4 text-primary" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className="h-9 w-9 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 text-red-600" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="flex-1">
@@ -398,7 +392,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
                       className={`w-full flex items-center justify-between p-4 ${VOTE_STATUS_COLORS[currentUserVote.status].hover} transition-colors`}
                     >
                       <div className="flex items-center gap-3">
-                        <User
+                        <UserIcon
                           className={`h-5 w-5 shrink-0 ${VOTE_STATUS_COLORS[currentUserVote.status].text}`}
                         />
                         <div className="font-semibold text-gray-900">
