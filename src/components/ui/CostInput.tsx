@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 
 /**
- * Composant input pour le coût par personne
- * Gère un état local string pour permettre l'édition fluide
+ * Composant input numérique pour le coût par personne
+ * Utilise type="number" avec validation et arrondi à 2 décimales
  */
 interface CostInputProps {
   value: number | undefined;
@@ -37,35 +37,26 @@ export function CostInput({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
 
-    // Marquer comme en édition et stocker la valeur
+    // Marquer comme en édition
     if (!isEditing) {
       setIsEditing(true);
     }
-    setEditValue(rawValue);
 
     // Si complètement vide, mettre le field à undefined
     if (rawValue === "") {
+      setEditValue("");
       onChange(undefined);
       return;
     }
 
-    // Autoriser uniquement les chiffres, le point et la virgule
-    const sanitized = rawValue.replace(",", ".");
-
-    // Vérifier que c'est un format numérique valide (optionnel: max 2 décimales)
-    if (!/^\d*\.?\d{0,2}$/.test(sanitized)) {
-      return; // Ne pas mettre à jour le field pour les caractères invalides
-    }
-
-    // Si c'est juste un point, on attend la suite
-    if (sanitized === ".") {
-      return;
-    }
-
-    // Parser et stocker la valeur
-    const parsed = parseFloat(sanitized);
+    // Pour type="number", la valeur est déjà validée par le navigateur
+    const parsed = parseFloat(rawValue);
     if (!isNaN(parsed)) {
+      setEditValue(rawValue);
       onChange(parsed);
+    } else {
+      // Si la valeur n'est pas un nombre valide, ne rien faire
+      setEditValue(rawValue);
     }
   };
 
@@ -76,15 +67,11 @@ export function CostInput({
       return;
     }
 
-    // Au blur, nettoyer et valider
-    const trimmed = editValue.trim();
-
-    // Si vide ou invalide, mettre à undefined
-    if (trimmed === "" || trimmed === ".") {
+    // Au blur, valider et arrondir
+    if (editValue === "") {
       onChange(undefined);
     } else {
-      const sanitized = trimmed.replace(",", ".");
-      const parsed = parseFloat(sanitized);
+      const parsed = parseFloat(editValue);
       if (!isNaN(parsed)) {
         // Arrondir à 2 décimales pour les montants
         const rounded = Math.round(parsed * 100) / 100;
@@ -102,8 +89,9 @@ export function CostInput({
 
   return (
     <Input
-      type="text"
-      inputMode="decimal"
+      type="number"
+      step="0.01"
+      min="0"
       placeholder="0.00"
       value={displayValue}
       onChange={handleChange}
