@@ -112,8 +112,6 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     if (result.success) {
       // Rafraîchir les votes après soumission
       await getVotesForEvent(event.id);
-      // Fermer le mode édition après avoir voté
-      setIsEditingVote(false);
     } else {
       console.error("Failed to submit vote:", result.error);
     }
