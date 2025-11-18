@@ -14,6 +14,7 @@ import { FAB } from "@/components/calendar/FAB";
 import { Event, User } from "@/lib/types";
 import { EventFormValues } from "@/lib/validations/event";
 import { createClient } from "@/lib/supabase/client";
+import { canEditEvent } from "@/lib/utils";
 
 interface CalendarClientProps {
   initialUser: User;
@@ -136,6 +137,13 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
    * Gère la suppression d'un événement
    */
   const handleDeleteEvent = async (eventId: string) => {
+    // Find the event to check permissions
+    const event = events.find((e) => e.id === eventId);
+    if (event && !canEditEvent(event.user_id, initialUser)) {
+      alert("Vous n'avez pas la permission de supprimer cet événement");
+      return;
+    }
+
     const { success, error: deleteError } = await deleteEvent(eventId);
 
     if (!success) {
@@ -148,6 +156,18 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
    * Gère le drag and drop d'un événement (modification de date/heure)
    */
   const handleEventUpdate = async (eventId: string, start: Date, end: Date) => {
+    // Find the event to check permissions
+    const event = events.find((e) => e.id === eventId);
+    if (!event) {
+      throw new Error("Événement non trouvé");
+    }
+
+    // Check if user has permission to edit this event
+    if (!canEditEvent(event.user_id, initialUser)) {
+      alert("Vous n'avez pas la permission de modifier cet événement");
+      throw new Error("Permission denied");
+    }
+
     const { success, error: updateError } = await updateEvent(eventId, {
       start_time: start.toISOString(),
       end_time: end.toISOString(),
@@ -258,6 +278,7 @@ export default function CalendarClient({ initialUser }: CalendarClientProps) {
                 <div className="h-full">
                   <Calendar
                     events={events}
+                    currentUser={initialUser}
                     loading={eventsLoading}
                     onEventClick={handleEventClick}
                     onDateSelect={handleDateSelect}

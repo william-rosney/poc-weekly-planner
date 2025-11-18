@@ -5,12 +5,14 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Event } from "@/lib/types";
+import { Event, User } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { WeekNavigator } from "@/components/calendar/WeekNavigator";
+import { canEditEvent } from "@/lib/utils";
 
 interface CalendarProps {
   events: Event[];
+  currentUser: User;
   loading?: boolean;
   onEventClick?: (event: Event) => void;
   onDateSelect?: (start: Date, end: Date) => void;
@@ -23,6 +25,7 @@ interface CalendarProps {
  */
 export function Calendar({
   events,
+  currentUser,
   loading = false,
   onEventClick,
   onDateSelect,
@@ -66,20 +69,27 @@ export function Calendar({
   };
 
   // Convert Event[] to FullCalendar EventInput format
-  const calendarEvents = events.map((event) => ({
-    id: event.id,
-    title: event.title,
-    start: event.start_time,
-    end: event.end_time,
-    backgroundColor: event.color || "#C8102E", // Default: christmas-red
-    borderColor: event.color || "#C8102E",
-    extendedProps: {
-      description: event.description,
-      link: event.link,
-      cost_per_person: event.cost_per_person,
-      user_id: event.user_id,
-    },
-  }));
+  const calendarEvents = events.map((event) => {
+    const isEditable = canEditEvent(event.user_id, currentUser);
+
+    return {
+      id: event.id,
+      title: event.title,
+      start: event.start_time,
+      end: event.end_time,
+      backgroundColor: event.color || "#C8102E", // Default: christmas-red
+      borderColor: event.color || "#C8102E",
+      editable: isEditable,
+      startEditable: isEditable,
+      durationEditable: isEditable,
+      extendedProps: {
+        description: event.description,
+        link: event.link,
+        cost_per_person: event.cost_per_person,
+        user_id: event.user_id,
+      },
+    };
+  });
 
   // Handle event click
   const handleEventClick = (clickInfo: EventClickArg) => {
@@ -212,6 +222,13 @@ export function Calendar({
           eventResize={handleEventResize}
           eventDurationEditable={true}
           eventStartEditable={true}
+          eventAllow={(_dropInfo, draggedEvent) => {
+            // Additional security check: prevent unauthorized drag & drop
+            if (!draggedEvent) return false;
+            const eventUserId = draggedEvent.extendedProps?.user_id;
+            if (!eventUserId) return false;
+            return canEditEvent(eventUserId, currentUser);
+          }}
           // Styling
           eventClassNames="cursor-pointer hover:opacity-80 transition-opacity"
           dayCellClassNames="hover:bg-background/30 transition-colors"
