@@ -396,7 +396,7 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
                           className={`h-5 w-5 shrink-0 ${VOTE_STATUS_COLORS[currentUserVote.status].text}`}
                         />
                         <div className="font-semibold text-gray-900">
-                          Ma participation
+                          Mon choix
                         </div>
                       </div>
 
