@@ -5,6 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import { Event, User } from "@/lib/types";
 import { EventClickArg, DateSelectArg, EventDropArg } from "@fullcalendar/core";
 import { WeekNavigator } from "@/components/calendar/WeekNavigator";
@@ -188,7 +189,8 @@ export function Calendar({
       <div className="flex-1 overflow-y-auto">
         <FullCalendar
           ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentTimezonePlugin]}
+          timeZone="America/Toronto"
           initialView={isMobile ? "timeGridDay" : "timeGridWeek"}
           headerToolbar={false}
           datesSet={handleDatesSet}
