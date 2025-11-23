@@ -149,9 +149,6 @@ export function UserSelector({
                       <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                         {user.name}
                       </p>
-                      <p className="text-xs sm:text-sm text-gray-600 truncate">
-                        {user.email}
-                      </p>
                     </div>
 
                     {/* Icône selon le rôle - Administrateur ou Membre */}
