@@ -8,6 +8,7 @@ import {
   Calendar1,
 } from "lucide-react";
 import { fr } from "date-fns/locale";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -90,8 +91,10 @@ export function WeekNavigator({
 
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
-      // Navigate to the selected date
-      calendarApi.gotoDate(date);
+      // Convert to YYYY-MM-DD string to avoid timezone conversion issues
+      // This ensures the date is interpreted in the calendar's configured timezone
+      const dateString = format(date, "yyyy-MM-dd");
+      calendarApi.gotoDate(dateString);
       setIsOpen(false);
       onNavigate?.();
     }
