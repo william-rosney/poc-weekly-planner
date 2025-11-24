@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { toZonedTime } from "date-fns-tz";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import { CalendarIcon } from "lucide-react";
 import { APP_TIMEZONE } from "@/lib/constants";
 import {
@@ -153,7 +153,9 @@ export function EventForm({
                           const newDate = new Date(date);
                           newDate.setHours(zonedCurrent.getHours());
                           newDate.setMinutes(zonedCurrent.getMinutes());
-                          field.onChange(newDate);
+                          // Convert back to UTC for storage
+                          const utcDate = fromZonedTime(newDate, APP_TIMEZONE);
+                          field.onChange(utcDate);
                         }
                       }}
                       locale={fr}
@@ -178,10 +180,13 @@ export function EventForm({
                     value={field.value ? formatInTimezone(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
+                      // Get current date in Toronto timezone
                       const zonedDate = toZonedTime(field.value, APP_TIMEZONE);
                       zonedDate.setHours(parseInt(hours, 10));
                       zonedDate.setMinutes(parseInt(minutes, 10));
-                      field.onChange(zonedDate);
+                      // Convert back to UTC for storage
+                      const utcDate = fromZonedTime(zonedDate, APP_TIMEZONE);
+                      field.onChange(utcDate);
                     }}
                     disabled={isLoading}
                   />
@@ -231,7 +236,9 @@ export function EventForm({
                           const newDate = new Date(date);
                           newDate.setHours(zonedCurrent.getHours());
                           newDate.setMinutes(zonedCurrent.getMinutes());
-                          field.onChange(newDate);
+                          // Convert back to UTC for storage
+                          const utcDate = fromZonedTime(newDate, APP_TIMEZONE);
+                          field.onChange(utcDate);
                         }
                       }}
                       locale={fr}
@@ -256,10 +263,13 @@ export function EventForm({
                     value={field.value ? formatInTimezone(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
+                      // Get current date in Toronto timezone
                       const zonedDate = toZonedTime(field.value, APP_TIMEZONE);
                       zonedDate.setHours(parseInt(hours, 10));
                       zonedDate.setMinutes(parseInt(minutes, 10));
-                      field.onChange(zonedDate);
+                      // Convert back to UTC for storage
+                      const utcDate = fromZonedTime(zonedDate, APP_TIMEZONE);
+                      field.onChange(utcDate);
                     }}
                     disabled={isLoading}
                   />
