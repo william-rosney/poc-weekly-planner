@@ -21,3 +21,9 @@ export const COLORS = {
   PINK: "pink",
   ORANGE: "orange",
 } as const;
+
+/**
+ * Application timezone - All dates are displayed in this timezone
+ * regardless of the user's local timezone
+ */
+export const APP_TIMEZONE = "America/Toronto";

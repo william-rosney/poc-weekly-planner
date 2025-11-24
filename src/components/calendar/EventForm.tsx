@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 import { CalendarIcon } from "lucide-react";
+import { APP_TIMEZONE } from "@/lib/constants";
 import {
   eventFormSchema,
   type EventFormValues,
@@ -37,6 +39,14 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+
+/**
+ * Format a date in the app timezone
+ */
+const formatInTimezone = (date: Date, formatStr: string) => {
+  const zonedDate = toZonedTime(date, APP_TIMEZONE);
+  return format(zonedDate, formatStr, { locale: fr });
+};
 
 interface EventFormProps {
   defaultValues?: Partial<EventFormValues>;
@@ -124,7 +134,7 @@ export function EventForm({
                         disabled={isLoading}
                       >
                         {field.value ? (
-                          format(field.value, "dd/MM/yyyy", { locale: fr })
+                          formatInTimezone(field.value, "dd/MM/yyyy")
                         ) : (
                           <span>Choisir une date</span>
                         )}
@@ -135,15 +145,14 @@ export function EventForm({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={field.value}
+                      selected={toZonedTime(field.value, APP_TIMEZONE)}
                       onSelect={(date) => {
                         if (date) {
                           // Preserve the time when changing date
+                          const zonedCurrent = toZonedTime(field.value, APP_TIMEZONE);
                           const newDate = new Date(date);
-                          if (field.value) {
-                            newDate.setHours(field.value.getHours());
-                            newDate.setMinutes(field.value.getMinutes());
-                          }
+                          newDate.setHours(zonedCurrent.getHours());
+                          newDate.setMinutes(zonedCurrent.getMinutes());
                           field.onChange(newDate);
                         }
                       }}
@@ -166,13 +175,13 @@ export function EventForm({
                 <FormControl>
                   <Input
                     type="time"
-                    value={field.value ? format(field.value, "HH:mm") : ""}
+                    value={field.value ? formatInTimezone(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
-                      const newDate = new Date(field.value);
-                      newDate.setHours(parseInt(hours, 10));
-                      newDate.setMinutes(parseInt(minutes, 10));
-                      field.onChange(newDate);
+                      const zonedDate = toZonedTime(field.value, APP_TIMEZONE);
+                      zonedDate.setHours(parseInt(hours, 10));
+                      zonedDate.setMinutes(parseInt(minutes, 10));
+                      field.onChange(zonedDate);
                     }}
                     disabled={isLoading}
                   />
@@ -203,7 +212,7 @@ export function EventForm({
                         disabled={isLoading}
                       >
                         {field.value ? (
-                          format(field.value, "dd/MM/yyyy", { locale: fr })
+                          formatInTimezone(field.value, "dd/MM/yyyy")
                         ) : (
                           <span>Choisir une date</span>
                         )}
@@ -214,15 +223,14 @@ export function EventForm({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={field.value}
+                      selected={toZonedTime(field.value, APP_TIMEZONE)}
                       onSelect={(date) => {
                         if (date) {
                           // Preserve the time when changing date
+                          const zonedCurrent = toZonedTime(field.value, APP_TIMEZONE);
                           const newDate = new Date(date);
-                          if (field.value) {
-                            newDate.setHours(field.value.getHours());
-                            newDate.setMinutes(field.value.getMinutes());
-                          }
+                          newDate.setHours(zonedCurrent.getHours());
+                          newDate.setMinutes(zonedCurrent.getMinutes());
                           field.onChange(newDate);
                         }
                       }}
@@ -245,13 +253,13 @@ export function EventForm({
                 <FormControl>
                   <Input
                     type="time"
-                    value={field.value ? format(field.value, "HH:mm") : ""}
+                    value={field.value ? formatInTimezone(field.value, "HH:mm") : ""}
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(":");
-                      const newDate = new Date(field.value);
-                      newDate.setHours(parseInt(hours, 10));
-                      newDate.setMinutes(parseInt(minutes, 10));
-                      field.onChange(newDate);
+                      const zonedDate = toZonedTime(field.value, APP_TIMEZONE);
+                      zonedDate.setHours(parseInt(hours, 10));
+                      zonedDate.setMinutes(parseInt(minutes, 10));
+                      field.onChange(zonedDate);
                     }}
                     disabled={isLoading}
                   />

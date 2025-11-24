@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
+import { APP_TIMEZONE } from "@/lib/constants";
 import { useState, useEffect, useRef } from "react";
 import { useVotes } from "@/hooks/useVotes";
 import { useUsers } from "@/hooks/useUsers";
@@ -128,8 +130,9 @@ export function EventDetails({ event, onEdit, onDelete }: EventDetailsProps) {
     }
   };
 
-  const startDate = new Date(event.start_time);
-  const endDate = new Date(event.end_time);
+  // Convert dates to Toronto timezone for display
+  const startDate = toZonedTime(new Date(event.start_time), APP_TIMEZONE);
+  const endDate = toZonedTime(new Date(event.end_time), APP_TIMEZONE);
 
   const formatDate = (date: Date) => {
     return format(date, "EEEE d MMMM yyyy", { locale: fr });
